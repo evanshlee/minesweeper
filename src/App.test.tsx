@@ -29,12 +29,12 @@ test("increments count when button is clicked", async () => {
   // Use userEvent instead of fireEvent
   await user.click(button);
   expect(
-    screen.getByRole("button", { name: /count is 1/i })
+    screen.getByRole("button", { name: /count is 1/i }),
   ).toBeInTheDocument();
 
   await user.click(button);
   expect(
-    screen.getByRole("button", { name: /count is 2/i })
+    screen.getByRole("button", { name: /count is 2/i }),
   ).toBeInTheDocument();
 });
 
@@ -43,6 +43,6 @@ test("displays correct static text", () => {
   expect(screen.getByText(/Edit/i)).toBeInTheDocument();
   expect(screen.getByText(/src\/App\.tsx/i)).toBeInTheDocument();
   expect(
-    screen.getByText(/Click on the Vite and React logos to learn more/i)
+    screen.getByText(/Click on the Vite and React logos to learn more/i),
   ).toBeInTheDocument();
 });
