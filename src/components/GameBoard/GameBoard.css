@@ -1,0 +1,92 @@
+.game-board {
+  display: inline-block;
+  padding: 10px;
+  background-color: #bdbdbd;
+  border: 3px solid #7b7b7b;
+  border-radius: 5px;
+  margin: 0 auto;
+}
+
+.board-row {
+  display: flex;
+}
+
+.cell {
+  width: 30px;
+  height: 30px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #c0c0c0;
+  border: 2px outset white;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+.cell:hover:not(.revealed):not(.flagged) {
+  background-color: #d8d8d8;
+}
+
+.cell.revealed {
+  background-color: #e0e0e0;
+  border: 1px solid #999;
+  border-style: solid;
+}
+
+.cell.flagged {
+  color: red;
+}
+
+.cell.mine {
+  background-color: #ff0000;
+}
+
+/* Number colors */
+.cell.adjacent-1 {
+  color: blue;
+}
+.cell.adjacent-2 {
+  color: green;
+}
+.cell.adjacent-3 {
+  color: red;
+}
+.cell.adjacent-4 {
+  color: darkblue;
+}
+.cell.adjacent-5 {
+  color: brown;
+}
+.cell.adjacent-6 {
+  color: teal;
+}
+.cell.adjacent-7 {
+  color: black;
+}
+.cell.adjacent-8 {
+  color: gray;
+}
+
+/* For accessibility */
+.game-board[data-status="lost"] .cell.mine {
+  background-color: #ff0000;
+}
+
+.game-board[data-status="won"] {
+  animation: win-animation 1s ease-in-out;
+}
+
+@keyframes win-animation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

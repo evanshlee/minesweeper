@@ -1,34 +1,49 @@
 import { useState } from "react";
+
+import { useGameState } from "./hooks/useGameState";
+import { Difficulty } from "./models/types";
+
+import ControlPanel from "./components/ControlPanel";
+import DifficultySelector from "./components/DifficultySelector";
+import GameBoard from "./components/GameBoard";
+
 import "./App.css";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [difficulty, setDifficulty] = useState<Difficulty>("beginner");
+  const {
+    board,
+    gameStatus,
+    timeElapsed,
+    minesRemaining,
+    handleCellClick,
+    handleCellFlag,
+    resetGame,
+  } = useGameState(difficulty);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="minesweeper-app">
+      <h1>Minesweeper</h1>
+
+      <DifficultySelector
+        currentDifficulty={difficulty}
+        onSelectDifficulty={setDifficulty}
+      />
+
+      <ControlPanel
+        minesRemaining={minesRemaining}
+        timeElapsed={timeElapsed}
+        onReset={resetGame}
+        gameStatus={gameStatus}
+      />
+
+      <GameBoard
+        board={board}
+        onCellClick={handleCellClick}
+        onCellFlag={handleCellFlag}
+        gameStatus={gameStatus}
+      />
+    </div>
   );
 }
 
