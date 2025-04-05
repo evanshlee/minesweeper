@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BoardConfig, Difficulty, DifficultySettings } from "../models/types";
 import "./DifficultySelector.css";
 
@@ -17,18 +17,29 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
     mines: 15,
   });
 
-  const [showCustomOptions, setShowCustomOptions] = useState(false);
+  const [showCustomOptions, setShowCustomOptions] = useState(
+    currentDifficulty === "custom"
+  );
+
+  // When difficulty changes to custom, ensure we immediately provide the custom config
+  useEffect(() => {
+    if (currentDifficulty === "custom") {
+      setShowCustomOptions(true);
+    }
+  }, [currentDifficulty]);
 
   const handleDifficultyChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ): void => {
     const newDifficulty = e.target.value as Difficulty;
-    onSelectDifficulty(newDifficulty);
 
     if (newDifficulty === "custom") {
       setShowCustomOptions(true);
+      // Always pass the custom config when selecting custom
+      onSelectDifficulty(newDifficulty, customConfig);
     } else {
       setShowCustomOptions(false);
+      onSelectDifficulty(newDifficulty);
     }
   };
 

@@ -89,3 +89,35 @@
   margin: 5px 0;
   font-weight: bold;
 }
+
+/* Responsive design improvements */
+@media (max-width: 600px) {
+  .difficulty-selector {
+    padding: 10px;
+    max-width: 100%;
+  }
+
+  .radio-options {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 20%;
+  }
+
+  .radio-label {
+    margin: 3px 0;
+  }
+
+  .custom-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .radio-options {
+    margin-left: 10%;
+  }
+
+  .input-group label {
+    font-size: 0.9em;
+  }
+}
