@@ -7,6 +7,12 @@
   margin: 0 auto;
 }
 
+/* Enhanced focus styles for the game board */
+.game-board:focus {
+  outline: 3px solid #4b96f3;
+  outline-offset: 3px;
+}
+
 .board-row {
   display: flex;
 }
@@ -76,6 +82,22 @@
   outline-offset: -1px;
   position: relative;
   z-index: 1;
+}
+
+/* Make sure revealed cells can also show focus */
+.cell.revealed:focus {
+  outline: 3px solid #4b96f3;
+  outline-offset: -1px;
+  box-shadow: 0 0 0 1px rgba(75, 150, 243, 0.5);
+}
+
+/* Enhanced focus styles for the game board */
+.game-board:focus .cell:focus {
+  outline: 3px solid #4b96f3;
+  outline-offset: -1px;
+  position: relative;
+  z-index: 2; /* Increase z-index for focused cell */
+  box-shadow: 0 0 0 2px rgba(75, 150, 243, 0.5);
 }
 
 /* Screen reader only class */
