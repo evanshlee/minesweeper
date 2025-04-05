@@ -1,0 +1,89 @@
+.game-instructions-container {
+  margin: 20px auto;
+  max-width: 500px;
+  text-align: center;
+}
+
+.help-button {
+  background-color: #c0c0c0;
+  border: 3px outset white;
+  padding: 8px 15px;
+  font-size: 1em;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.help-button:hover {
+  background-color: #d8d8d8;
+}
+
+.help-button:focus {
+  outline: 3px solid #4b96f3;
+  outline-offset: 2px;
+}
+
+.instructions-panel {
+  background-color: #e0e0e0;
+  border: 3px solid #7b7b7b;
+  border-radius: 5px;
+  padding: 15px 20px;
+  text-align: left;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.instructions-panel h2 {
+  text-align: center;
+  margin-top: 0;
+  color: #333;
+}
+
+.instructions-panel h3 {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  color: #444;
+  border-bottom: 1px solid #999;
+  padding-bottom: 3px;
+}
+
+.instructions-panel h4 {
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.instructions-panel ul {
+  margin-top: 5px;
+  padding-left: 20px;
+}
+
+.instructions-panel li {
+  margin-bottom: 5px;
+}
+
+.close-button {
+  background-color: #c0c0c0;
+  border: 3px outset white;
+  padding: 5px 15px;
+  margin-top: 15px;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.close-button:hover {
+  background-color: #d8d8d8;
+}
+
+.close-button:active {
+  border-style: inset;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+  .instructions-panel {
+    padding: 10px;
+    font-size: 0.9em;
+  }
+}
