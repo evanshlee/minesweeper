@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { useGameState } from "./hooks/useGameState";
 import { BoardConfig, Difficulty, GameStatus } from "./models/types";
 
-import ControlPanel from "./components/ControlPanel";
-import DifficultySelector from "./components/DifficultySelector";
-import GameBoard from "./components/GameBoard";
-import GameInstructions from "./components/GameInstructions";
+import ControlPanel from "./components/ControlPanel/ControlPanel";
+import DifficultySelector from "./components/DifficultySelector/DifficultySelector";
+import GameBoard from "./components/GameBoard/GameBoard";
+import GameInstructions from "./components/GameInstructions/GameInstructions";
 
 import "./App.css";
 
