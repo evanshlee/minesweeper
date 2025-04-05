@@ -4,3 +4,77 @@
   padding: 2rem;
   text-align: center;
 }
+
+/* Screen reader only class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Enhanced keyboard focus style */
+:focus {
+  outline: 3px solid #4b96f3;
+  outline-offset: 2px;
+}
+
+/* Enhanced visual feedback for button focus */
+button:focus-visible {
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.6);
+}
+
+/* Game status announcement style */
+.status-announcer {
+  height: 1.5em;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+/* Visual effect for status announcement */
+.status-announcer:not(:empty) {
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  animation: fade-in 0.3s ease-in-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  #root {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 2.5em;
+  }
+}
+
+@media (max-width: 480px) {
+  #root {
+    padding: 0.5rem;
+  }
+
+  h1 {
+    font-size: 2em;
+    margin: 0.5em 0;
+  }
+
+  .minesweeper-app {
+    font-size: 0.9em;
+  }
+}

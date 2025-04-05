@@ -45,3 +45,24 @@
 .reset-button:active {
   border-style: inset;
 }
+
+/* Responsive design for control panel */
+@media (max-width: 480px) {
+  .control-panel {
+    max-width: 250px;
+    padding: 6px;
+  }
+
+  .mine-counter,
+  .timer {
+    font-size: 18px;
+    min-width: 60px;
+    padding: 3px 8px;
+  }
+
+  .reset-button {
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+  }
+}
