@@ -44,30 +44,72 @@
   background-color: #ff0000;
 }
 
-/* Number colors */
+/* Number colors with improved contrast */
 .cell.adjacent-1 {
-  color: blue;
+  color: #0000ff; /* Blue */
 }
 .cell.adjacent-2 {
-  color: green;
+  color: #006400; /* Darker green for better contrast */
 }
 .cell.adjacent-3 {
-  color: red;
+  color: #cc0000; /* Brighter red */
 }
 .cell.adjacent-4 {
-  color: darkblue;
+  color: #00008b; /* Dark blue */
 }
 .cell.adjacent-5 {
-  color: brown;
+  color: #8b0000; /* Dark red instead of brown for better contrast */
 }
 .cell.adjacent-6 {
-  color: teal;
+  color: #008080; /* Teal */
 }
 .cell.adjacent-7 {
-  color: black;
+  color: #000000; /* Black */
 }
 .cell.adjacent-8 {
-  color: gray;
+  color: #4b4b4b; /* Darker gray for better contrast */
+}
+
+/* Focus indicator for keyboard navigation */
+.cell:focus {
+  outline: 3px solid #4b96f3;
+  outline-offset: -1px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Screen reader only class */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Responsive design improvements */
+@media (max-width: 768px) {
+  .game-board {
+    padding: 5px;
+  }
+
+  .cell {
+    width: 25px;
+    height: 25px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cell {
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+  }
 }
 
 /* For accessibility */
