@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { useGameState } from "./hooks/useGameState";
+import { useGameState } from "./hooks/useGameState/useGameState";
 import { BoardConfig, Difficulty, GameStatus } from "./models/types";
 
 import ControlPanel from "./components/ControlPanel/ControlPanel";

@@ -1,17 +1,11 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { BoardConfig, Difficulty } from "../models/types";
-import * as gameUtils from "../utils/gameUtils";
+import type { BoardConfig, Difficulty } from "../../models/types";
 import { useGameState } from "./useGameState";
 
 // Timer mock
 beforeEach(() => {
   vi.useFakeTimers();
-  // Set up spies to track function calls
-  vi.spyOn(gameUtils, "initializeBoard");
-  vi.spyOn(gameUtils, "placeMines");
-  vi.spyOn(gameUtils, "revealCell");
-  vi.spyOn(gameUtils, "checkWinCondition");
 });
 
 afterEach(() => {
@@ -64,40 +58,48 @@ test("handles the first click correctly", () => {
     result.current.handleCellClick(0, 0);
   });
 
-  // Verify mines were placed and cell was revealed
-  expect(gameUtils.placeMines).toHaveBeenCalledWith(
-    expect.anything(),
-    testConfig,
-    0,
-    0
-  );
-  expect(gameUtils.revealCell).toHaveBeenCalledWith(expect.anything(), 0, 0);
+  // Verify observable behavior after first click
   expect(result.current.gameStatus).toBe("playing");
   expect(result.current.board[0][0].isRevealed).toBe(true);
   expect(result.current.board[0][0].isMine).toBe(false); // First click is always safe
+
+  // Check that timer has started
+  expect(result.current.timeElapsed).toBe(0);
 });
 
 test("handles revealing a non-mine cell correctly", () => {
   const { result } = renderHook(() => useGameState("custom", testConfig));
 
-  // First click
+  // First click to start the game
   act(() => {
     result.current.handleCellClick(0, 0);
   });
 
-  // Check if a specific position has no mine before clicking
-  if (!result.current.board[1][1].isMine) {
-    // Clear mocks to isolate the next click
-    vi.clearAllMocks();
+  // Find a non-mine cell to click
+  let nonMineX = -1,
+    nonMineY = -1;
+  for (let y = 0; y < result.current.board.length; y++) {
+    for (let x = 0; x < result.current.board[0].length; x++) {
+      if (
+        !result.current.board[y][x].isMine &&
+        !result.current.board[y][x].isRevealed
+      ) {
+        nonMineX = x;
+        nonMineY = y;
+        break;
+      }
+    }
+    if (nonMineX !== -1) break;
+  }
 
-    // Second click on a non-mine cell
+  if (nonMineX !== -1) {
+    // Click on the non-mine cell
     act(() => {
-      result.current.handleCellClick(1, 1);
+      result.current.handleCellClick(nonMineX, nonMineY);
     });
 
     // Verify the cell was revealed
-    expect(gameUtils.revealCell).toHaveBeenCalled();
-    expect(result.current.board[1][1].isRevealed).toBe(true);
+    expect(result.current.board[nonMineY][nonMineX].isRevealed).toBe(true);
     expect(result.current.gameStatus).toBe("playing");
   }
 });

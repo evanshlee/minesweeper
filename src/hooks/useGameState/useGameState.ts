@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  BoardConfig,
-  CellData,
-  Difficulty,
+  type BoardConfig,
+  type CellData,
+  type Difficulty,
   DifficultySettings,
-  GameStatus,
-} from "../models/types";
+  type GameStatus,
+} from "../../models/types";
 import {
   checkWinCondition,
   initializeBoard,
   placeMines,
   revealCell,
-} from "../utils/gameUtils";
+} from "../../utils/gameUtils";
 
 export const useGameState = (
   difficulty: Difficulty,
