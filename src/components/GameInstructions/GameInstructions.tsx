@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, type FC } from "react";
 import "./GameInstructions.css";
 
 interface GameInstructionsProps {
@@ -6,7 +6,7 @@ interface GameInstructionsProps {
   onClose?: () => void;
 }
 
-const GameInstructions: React.FC<GameInstructionsProps> = ({
+const GameInstructions: FC<GameInstructionsProps> = ({
   isOpen = false,
   onClose = () => {},
 }) => {

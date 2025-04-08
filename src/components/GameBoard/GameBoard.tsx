@@ -1,4 +1,4 @@
-import { useCallback, type FC } from "react";
+import { useCallback, type FC, type KeyboardEvent } from "react";
 import { useBoardNavigation } from "../../hooks/useBoardNavigation/useBoardNavigation";
 import { CellData, GameStatus } from "../../models/types";
 import { Cell } from "../Cell/Cell";
@@ -34,7 +34,7 @@ const GameBoard: FC<GameBoardProps> = ({
 
   // Keyboard navigation handler for individual cells
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent, x: number, y: number) => {
+    (e: KeyboardEvent, x: number, y: number) => {
       // Do not process key events if focus is not active
       if (!focusActive) return;
 
@@ -109,7 +109,6 @@ const GameBoard: FC<GameBoardProps> = ({
                 cell={cell}
                 x={x}
                 y={y}
-                gameStatus={gameStatus}
                 isFocused={isFocused}
                 onCellClick={(x, y) => handleCellClick(x, y, onCellClick)}
                 onCellFlag={onCellFlag}

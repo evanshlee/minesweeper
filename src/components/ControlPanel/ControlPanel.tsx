@@ -1,4 +1,4 @@
-import React from "react";
+import type { FC } from "react";
 import { GameStatus } from "../../models/types";
 import "./ControlPanel.css";
 
@@ -9,7 +9,7 @@ interface ControlPanelProps {
   onReset: () => void;
 }
 
-const ControlPanel: React.FC<ControlPanelProps> = ({
+const ControlPanel: FC<ControlPanelProps> = ({
   timeElapsed,
   minesRemaining,
   gameStatus,

@@ -127,20 +127,6 @@ test("has tabIndex of -1 when not focused", () => {
   expect(screen.getByRole("gridcell")).toHaveAttribute("tabIndex", "-1");
 });
 
-test("is disabled when game is won", () => {
-  const cell = createCellData();
-  render(<Cell {...defaultProps} cell={cell} gameStatus="won" />);
-
-  expect(screen.getByRole("gridcell")).toBeDisabled();
-});
-
-test("is disabled when game is lost", () => {
-  const cell = createCellData();
-  render(<Cell {...defaultProps} cell={cell} gameStatus="lost" />);
-
-  expect(screen.getByRole("gridcell")).toBeDisabled();
-});
-
 test("is disabled when cell is a revealed mine", () => {
   const cell = createCellData({ isRevealed: true, isMine: true });
   render(<Cell {...defaultProps} cell={cell} />);
