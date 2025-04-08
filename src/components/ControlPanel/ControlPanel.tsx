@@ -28,7 +28,7 @@ const ControlPanel: FC<ControlPanelProps> = ({
     return mines > 999 ? "999" : mines.toString().padStart(3, "0");
   };
 
-  // Determine emoji based on game status
+  // Determine emoji and status text based on game status
   const getFaceEmoji = (): string => {
     switch (gameStatus) {
       case "won":
@@ -42,21 +42,50 @@ const ControlPanel: FC<ControlPanelProps> = ({
     }
   };
 
+  // Get status description for screen readers
+  const getStatusDescription = (): string => {
+    switch (gameStatus) {
+      case "won":
+        return "You won the game! Click to restart.";
+      case "lost":
+        return "Game over. Click to restart.";
+      case "playing":
+        return "Game in progress. Click to restart.";
+      default:
+        return "Click to start a new game.";
+    }
+  };
+
   return (
-    <div className="control-panel" data-testid="control-panel">
-      <div className="mine-counter" data-testid="mine-counter">
+    <div
+      className="control-panel"
+      data-testid="control-panel"
+      role="group"
+      aria-label="Game controls"
+    >
+      <div
+        className="mine-counter"
+        data-testid="mine-counter"
+        role="status"
+        aria-label={`Mines remaining: ${minesRemaining}`}
+      >
         {formatMines(minesRemaining)}
       </div>
 
       <button
         className="reset-button"
         onClick={onReset}
-        aria-label="Reset game"
+        aria-label={getStatusDescription()}
       >
-        {getFaceEmoji()}
+        <span aria-hidden="true">{getFaceEmoji()}</span>
       </button>
 
-      <div className="timer" data-testid="timer">
+      <div
+        className="timer"
+        data-testid="timer"
+        role="timer"
+        aria-label={`Time elapsed: ${timeElapsed} seconds`}
+      >
         {formatTime(timeElapsed)}
       </div>
     </div>

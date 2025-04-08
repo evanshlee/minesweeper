@@ -71,11 +71,23 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
     onSelectDifficulty("custom", customConfig);
   };
 
-  return (
-    <div className="difficulty-selector" data-testid="difficulty-selector">
-      <h3>Difficulty</h3>
+  // Calculate max mines based on board size
+  const maxMines = customConfig.rows * customConfig.columns - 9;
 
-      <div className="radio-options">
+  return (
+    <div
+      className="difficulty-selector"
+      data-testid="difficulty-selector"
+      role="region"
+      aria-labelledby="difficulty-heading"
+    >
+      <h2 id="difficulty-heading">Difficulty</h2>
+
+      <div
+        className="radio-options"
+        role="radiogroup"
+        aria-labelledby="difficulty-heading"
+      >
         {(["beginner", "intermediate", "expert", "custom"] as Difficulty[]).map(
           (difficulty) => (
             <label key={difficulty} className="radio-label">
@@ -85,6 +97,7 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
                 value={difficulty}
                 checked={currentDifficulty === difficulty}
                 onChange={handleDifficultyChange}
+                aria-checked={currentDifficulty === difficulty}
               />
               {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
             </label>
@@ -93,7 +106,15 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
       </div>
 
       {showCustomOptions && (
-        <form onSubmit={handleCustomSubmit} className="custom-form">
+        <form
+          onSubmit={handleCustomSubmit}
+          className="custom-form"
+          aria-labelledby="custom-settings-heading"
+        >
+          <h3 id="custom-settings-heading" className="sr-only">
+            Custom Settings
+          </h3>
+
           <div className="input-group">
             <label htmlFor="rows">Rows:</label>
             <input
@@ -103,6 +124,9 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
               max="24"
               value={customConfig.rows}
               onChange={(e) => handleCustomConfigChange(e, "rows")}
+              aria-valuemin={5}
+              aria-valuemax={24}
+              aria-valuenow={customConfig.rows}
             />
           </div>
 
@@ -115,6 +139,9 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
               max="30"
               value={customConfig.columns}
               onChange={(e) => handleCustomConfigChange(e, "columns")}
+              aria-valuemin={5}
+              aria-valuemax={30}
+              aria-valuenow={customConfig.columns}
             />
           </div>
 
@@ -124,9 +151,12 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
               id="mines"
               type="number"
               min="1"
-              max={customConfig.rows * customConfig.columns - 9}
+              max={maxMines}
               value={customConfig.mines}
               onChange={(e) => handleCustomConfigChange(e, "mines")}
+              aria-valuemin={1}
+              aria-valuemax={maxMines}
+              aria-valuenow={customConfig.mines}
             />
           </div>
 
@@ -136,7 +166,7 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
         </form>
       )}
 
-      <div className="difficulty-info">
+      <div className="difficulty-info" aria-live="polite">
         {currentDifficulty !== "custom" ? (
           <div>
             <p>

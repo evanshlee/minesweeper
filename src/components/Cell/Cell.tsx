@@ -1,5 +1,6 @@
 import { KeyboardEvent, MouseEvent } from "react";
 import { CellData } from "../../models/types";
+import { getCellAriaLabel } from "../../utils/accessibilityUtils";
 
 interface CellProps {
   cell: CellData;
@@ -29,6 +30,9 @@ export const Cell = ({
     onCellFlag(x, y);
   };
 
+  // Get accessible name for this cell
+  const ariaLabel = getCellAriaLabel(x, y, cell);
+
   return (
     <button
       ref={ref}
@@ -49,6 +53,7 @@ export const Cell = ({
       onFocus={() => onCellFocus(x, y)}
       aria-pressed={cell.isRevealed}
       aria-disabled={cell.isRevealed}
+      aria-label={ariaLabel}
       tabIndex={isFocused ? 0 : -1}
       role="gridcell"
     >

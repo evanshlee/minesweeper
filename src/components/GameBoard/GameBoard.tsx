@@ -78,10 +78,21 @@ const GameBoard: FC<GameBoardProps> = ({
 
   const handleCellFocus = useCallback(
     (x: number, y: number) => {
-      lastFocusedCellRef.current = `${x},${y}`;
+      lastFocusedCellRef.current = `${y},${x}`;
     },
     [lastFocusedCellRef]
   );
+
+  // Calculate current game state for aria-live announcements
+  const gameStatusAnnouncement =
+    gameStatus === "won"
+      ? "Congratulations! You've won the game!"
+      : gameStatus === "lost"
+      ? "Game over! You hit a mine."
+      : "";
+
+  const rowCount = board.length;
+  const columnCount = board[0]?.length || 0;
 
   return (
     <div
@@ -90,7 +101,9 @@ const GameBoard: FC<GameBoardProps> = ({
       data-status={gameStatus}
       role="grid"
       aria-describedby={ariaDescribedBy}
-      aria-label="Minesweeper game board"
+      aria-label={`Minesweeper game board, ${rowCount} rows by ${columnCount} columns`}
+      aria-rowcount={rowCount}
+      aria-colcount={columnCount}
       ref={gameBoardRef}
       tabIndex={0}
       onFocus={handleBoardFocus}
@@ -98,7 +111,7 @@ const GameBoard: FC<GameBoardProps> = ({
       onKeyDown={handleBoardKeyDown}
     >
       {board.map((row, y) => (
-        <div key={y} className="board-row" role="row">
+        <div key={y} className="board-row" role="row" aria-rowindex={y + 1}>
           {row.map((cell, x) => {
             const key = `${y},${x}`;
             const isFocused = focusPosition[0] === y && focusPosition[1] === x;
@@ -121,15 +134,9 @@ const GameBoard: FC<GameBoardProps> = ({
         </div>
       ))}
 
-      {gameStatus === "won" && (
+      {gameStatusAnnouncement && (
         <div className="visually-hidden" role="status" aria-live="assertive">
-          Congratulations! You've won the game!
-        </div>
-      )}
-
-      {gameStatus === "lost" && (
-        <div className="visually-hidden" role="alert">
-          Game over! You hit a mine.
+          {gameStatusAnnouncement}
         </div>
       )}
     </div>

@@ -84,14 +84,13 @@ function App() {
 
       <GameInstructions />
 
-      <div className="status-announcer" aria-live="polite">
+      <div className="status-announcer" aria-live="polite" role="status">
         {statusMessage}
       </div>
 
       <DifficultySelector
         currentDifficulty={difficulty}
         onSelectDifficulty={handleDifficultySelect}
-        aria-labelledby="game-title"
       />
 
       <ControlPanel
@@ -99,7 +98,6 @@ function App() {
         timeElapsed={timeElapsed}
         onReset={resetGame}
         gameStatus={gameStatus}
-        aria-live="polite"
       />
 
       <GameBoard
