@@ -1,6 +1,5 @@
-import type { FC, KeyboardEvent, MouseEvent } from "react";
+import { KeyboardEvent, MouseEvent } from "react";
 import { CellData } from "../../models/types";
-import { getCellAriaLabel } from "../../utils/accessibilityUtils";
 
 interface CellProps {
   cell: CellData;
@@ -11,10 +10,10 @@ interface CellProps {
   onCellFlag: (x: number, y: number) => void;
   onCellKeyDown: (e: KeyboardEvent, x: number, y: number) => void;
   onCellFocus: (x: number, y: number) => void;
-  cellRef: (el: HTMLButtonElement | null) => void;
+  ref?: (el: HTMLButtonElement | null) => void;
 }
 
-export const Cell: FC<CellProps> = ({
+export const Cell = ({
   cell,
   x,
   y,
@@ -23,8 +22,8 @@ export const Cell: FC<CellProps> = ({
   onCellFlag,
   onCellKeyDown,
   onCellFocus,
-  cellRef,
-}) => {
+  ref,
+}: CellProps) => {
   const handleContextMenu = (e: MouseEvent) => {
     e.preventDefault();
     onCellFlag(x, y);
@@ -32,25 +31,24 @@ export const Cell: FC<CellProps> = ({
 
   return (
     <button
-      ref={cellRef}
+      ref={ref}
       className={`
-        cell
-        ${cell.isRevealed ? "revealed" : ""}
-        ${cell.isRevealed && cell.isMine ? "mine" : ""}
-        ${cell.isFlagged ? "flagged" : ""}
-        ${
-          cell.isRevealed && !cell.isMine && cell.adjacentMines > 0
-            ? `adjacent-${cell.adjacentMines}`
-            : ""
-        }
-      `}
+          cell
+          ${cell.isRevealed ? "revealed" : ""}
+          ${cell.isRevealed && cell.isMine ? "mine" : ""}
+          ${cell.isFlagged ? "flagged" : ""}
+          ${
+            cell.isRevealed && !cell.isMine && cell.adjacentMines > 0
+              ? `adjacent-${cell.adjacentMines}`
+              : ""
+          }
+        `}
       onClick={() => onCellClick(x, y)}
       onContextMenu={handleContextMenu}
       onKeyDown={(e) => onCellKeyDown(e, x, y)}
       onFocus={() => onCellFocus(x, y)}
-      disabled={cell.isRevealed}
-      aria-label={getCellAriaLabel(x, y, cell)}
       aria-pressed={cell.isRevealed}
+      aria-disabled={cell.isRevealed}
       tabIndex={isFocused ? 0 : -1}
       role="gridcell"
     >

@@ -1,18 +1,17 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import type { ComponentProps } from "react";
 import { beforeEach, expect, test, vi } from "vitest";
-import { CellData, GameStatus } from "../../models/types";
+import { CellData } from "../../models/types";
 import { Cell } from "./Cell";
 
-const defaultProps = {
+const defaultProps: Omit<ComponentProps<typeof Cell>, "cell"> = {
   x: 1,
   y: 2,
-  gameStatus: "playing" as GameStatus,
   isFocused: false,
   onCellClick: vi.fn(),
   onCellFlag: vi.fn(),
   onCellKeyDown: vi.fn(),
   onCellFocus: vi.fn(),
-  cellRef: vi.fn(),
 };
 
 const createCellData = (overrides: Partial<CellData> = {}): CellData => ({
@@ -131,12 +130,15 @@ test("is disabled when cell is a revealed mine", () => {
   const cell = createCellData({ isRevealed: true, isMine: true });
   render(<Cell {...defaultProps} cell={cell} />);
 
-  expect(screen.getByRole("gridcell")).toBeDisabled();
+  const cellElement = screen.getByRole("gridcell");
+  expect(cellElement).toHaveAttribute("aria-disabled", "true");
+  // Ensure the element is not actually disabled so it remains focusable
+  expect(cellElement).not.toBeDisabled();
 });
 
-test("applies cellRef to the button element", () => {
+test("applies ref to the button element", () => {
+  const ref = vi.fn();
   const cell = createCellData();
-  render(<Cell {...defaultProps} cell={cell} />);
-
-  expect(defaultProps.cellRef).toHaveBeenCalled();
+  render(<Cell {...defaultProps} cell={cell} ref={ref} />);
+  expect(ref).toHaveBeenCalled();
 });

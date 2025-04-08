@@ -114,7 +114,7 @@ const GameBoard: FC<GameBoardProps> = ({
                 onCellFlag={onCellFlag}
                 onCellKeyDown={handleKeyDown}
                 onCellFocus={handleCellFocus}
-                cellRef={(el) => cellRefs.current.set(key, el)}
+                ref={(el) => cellRefs.current.set(key, el)}
               />
             );
           })}
