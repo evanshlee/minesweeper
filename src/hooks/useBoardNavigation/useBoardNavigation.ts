@@ -11,6 +11,12 @@ import {
   type RefObject,
 } from "react";
 import { CellData } from "../../models/types";
+import {
+  calculateArrowKeyMovement,
+  getBoardDimensions,
+  keyToPosition,
+  positionToKey,
+} from "../../utils/navigationUtils";
 
 interface BoardNavigationReturn<T> {
   focusPosition: [number, number];
@@ -19,7 +25,7 @@ interface BoardNavigationReturn<T> {
   gameBoardRef: RefObject<HTMLDivElement | null>;
   lastFocusedCellRef: RefObject<string | null>;
   handleArrowKey: (key: string) => void;
-  handleBoardFocus: FocusEventHandler<T>;
+  handleBoardFocus: () => void;
   handleBoardBlur: FocusEventHandler<T>;
   handleBoardKeyDown: KeyboardEventHandler<T>;
   handleCellClick: (
@@ -32,41 +38,50 @@ interface BoardNavigationReturn<T> {
 export function useBoardNavigation<T>(
   board: CellData[][]
 ): BoardNavigationReturn<T> {
-  // Initialize focus position with safe values
   const [focusPosition, setFocusPosition] = useState<[number, number]>([0, 0]);
   const [focusActive, setFocusActive] = useState(false);
 
-  // Create a mutable ref for tracking cells
   const cellRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map());
-
-  // Add a ref for the game board container
   const gameBoardRef = useRef<HTMLDivElement | null>(null);
-
-  // Track the last focused cell to help maintain focus
   const lastFocusedCellRef = useRef<string | null>(null);
+  const arrowKeyNavRef = useRef(false);
+  const mineRevealedRef = useRef<string | null>(null);
 
-  // Efficiently calculate focus position using useMemo
+  const dimensions = useMemo(() => getBoardDimensions(board), [board]);
+
   const nextFocusablePosition = useMemo((): [number, number] => {
-    const rows = board.length;
-    const cols = board[0]?.length || 0;
-
+    const { rows, cols } = dimensions;
     if (rows === 0 || cols === 0) return [0, 0];
 
-    // Check if current position is valid
-    const [currY, currX] = focusPosition;
-    if (currY < rows && currX < cols && !board[currY][currX].isRevealed) {
-      return [currY, currX];
+    if (arrowKeyNavRef.current) {
+      const [currY, currX] = focusPosition;
+      if (currY >= 0 && currY < rows && currX >= 0 && currX < cols) {
+        arrowKeyNavRef.current = false;
+        return [currY, currX];
+      }
     }
 
-    // Check if last focused position is valid
+    // When a mine is revealed, we should prioritize staying on that position
+    if (mineRevealedRef.current) {
+      const [mineY, mineX] = keyToPosition(mineRevealedRef.current);
+      if (mineY < rows && mineX < cols) {
+        return [mineY, mineX];
+      }
+    }
+
     if (lastFocusedCellRef.current) {
-      const [y, x] = lastFocusedCellRef.current.split(",").map(Number);
+      const [y, x] = keyToPosition(lastFocusedCellRef.current);
       if (y < rows && x < cols && !board[y][x].isRevealed) {
         return [y, x];
       }
     }
 
-    // Find the first unrevealed cell
+    const [currY, currX] = focusPosition;
+    if (currY < rows && currX < cols && !board[currY][currX].isRevealed) {
+      return [currY, currX];
+    }
+
+    // Find first unrevealed cell if current position is not suitable
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {
         if (!board[y][x].isRevealed) {
@@ -75,13 +90,10 @@ export function useBoardNavigation<T>(
       }
     }
 
-    // Fallback to [0, 0] if all cells are revealed
     return [0, 0];
-  }, [board, focusPosition]);
+  }, [board, dimensions, focusPosition]);
 
-  // Update focus position with memoized result
   useEffect(() => {
-    // Update state only if the position has actually changed
     if (
       nextFocusablePosition[0] !== focusPosition[0] ||
       nextFocusablePosition[1] !== focusPosition[1]
@@ -90,48 +102,58 @@ export function useBoardNavigation<T>(
     }
   }, [nextFocusablePosition, focusPosition]);
 
-  // Initialize ref map when board changes
-  useEffect(() => {
-    cellRefs.current.clear();
-  }, [board]);
-
-  // Focus cell when focus position changes and focus is active
+  // This effect is responsible for focusing the cell when focusActive changes or position changes
   useEffect(() => {
     if (!focusActive) return;
 
     const [y, x] = focusPosition;
-    const key = `${y},${x}`;
+    const key = positionToKey(y, x);
     const element = cellRefs.current.get(key);
 
     if (element && document.activeElement !== element) {
+      // Actually call focus() on the element
       element.focus();
       lastFocusedCellRef.current = key;
     }
   }, [focusPosition, focusActive]);
 
-  // Cell click handler - removed unnecessary wasRevealed variable
+  useEffect(() => {
+    cellRefs.current.clear();
+    // Don't reset mineRevealedRef yet as board might be updating after a mine click
+    if (
+      !mineRevealedRef.current ||
+      !board.some((row) => row.some((cell) => cell.isRevealed && cell.isMine))
+    ) {
+      mineRevealedRef.current = null;
+      lastFocusedCellRef.current = null;
+    }
+  }, [board]);
+
   const handleCellClick = useCallback(
     (x: number, y: number, onCellClick: (x: number, y: number) => void) => {
-      // Activate focus tracking
       setFocusActive(true);
 
-      // Call the original click handler
-      onCellClick(x, y);
+      const key = positionToKey(y, x);
+      lastFocusedCellRef.current = key;
 
-      // The board state change will automatically recalculate nextFocusablePosition
+      // If this is a mine cell, set the mineRevealedRef
+      if (y < board.length && x < board[0].length && board[y][x].isMine) {
+        mineRevealedRef.current = key;
+      }
+
+      // Explicitly set focus position to the clicked cell
+      setFocusPosition([y, x]);
+
+      onCellClick(x, y);
     },
-    [setFocusActive]
+    [board]
   );
 
-  // Handle focus on the game board container
   const handleBoardFocus = useCallback(() => {
     setFocusActive(true);
-    // nextFocusablePosition is automatically calculated, so no additional code is needed
   }, []);
 
-  // Handle board container blur
   const handleBoardBlur = useCallback((e: FocusEvent<T>) => {
-    // Only deactivate focus if focus is moving outside the board
     if (
       gameBoardRef.current &&
       e.relatedTarget &&
@@ -141,46 +163,33 @@ export function useBoardNavigation<T>(
     }
   }, []);
 
-  // Arrow key navigation logic
   const handleArrowKey = useCallback(
     (key: string) => {
-      const rows = board.length;
-      const cols = board[0]?.length || 0;
-      const [currY, currX] = focusPosition;
+      // Don't navigate away from a mine that was just revealed
+      if (mineRevealedRef.current) {
+        const [mineY, mineX] = keyToPosition(mineRevealedRef.current);
+        const [currY, currX] = focusPosition;
 
-      // Calculate the new target position based on arrow key
-      let newY = currY;
-      let newX = currX;
-
-      switch (key) {
-        case "ArrowUp":
-          newY = Math.max(0, currY - 1);
-          break;
-        case "ArrowDown":
-          newY = Math.min(rows - 1, currY + 1);
-          break;
-        case "ArrowLeft":
-          newX = Math.max(0, currX - 1);
-          break;
-        case "ArrowRight":
-          newX = Math.min(cols - 1, currX + 1);
-          break;
-        default:
-          return; // Not an arrow key
+        if (mineY === currY && mineX === currX) {
+          return; // Don't allow moving away from a revealed mine
+        }
       }
 
-      // Allow focusing on any cell, including revealed ones
-      setFocusPosition([newY, newX]);
+      const newPosition = calculateArrowKeyMovement(
+        key,
+        focusPosition,
+        dimensions
+      );
+      arrowKeyNavRef.current = true;
+      setFocusPosition(newPosition);
     },
-    [board, focusPosition]
+    [dimensions, focusPosition]
   );
 
-  // Handle keyboard navigation at the board level
   const handleBoardKeyDown = useCallback(
     (e: KeyboardEvent<T>) => {
       if (!focusActive) return;
 
-      // Handle arrow keys directly
       if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
         e.preventDefault();
         handleArrowKey(e.key);
