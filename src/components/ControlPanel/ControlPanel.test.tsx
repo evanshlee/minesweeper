@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, expect, test, vi } from "vitest";
 import { GameStatus } from "../../models/types";
 import ControlPanel from "./ControlPanel";
@@ -12,6 +12,7 @@ const defaultProps = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  cleanup();
 });
 
 test("renders correctly with default props", () => {
@@ -23,50 +24,38 @@ test("renders correctly with default props", () => {
   expect(screen.getByRole("button")).toHaveTextContent("🙂");
 });
 
-test("formats time correctly", () => {
-  const cases = [
-    { time: 0, expected: "000" },
-    { time: 9, expected: "009" },
-    { time: 45, expected: "045" },
-    { time: 100, expected: "100" },
-    { time: 999, expected: "999" },
-    { time: 1000, expected: "999" }, // Max time display
-  ];
-
-  cases.forEach(({ time, expected }) => {
-    render(<ControlPanel {...defaultProps} timeElapsed={time} />);
-    expect(screen.getByTestId("timer")).toHaveTextContent(expected);
-  });
+test.each([
+  [0, "000"],
+  [9, "009"],
+  [45, "045"],
+  [100, "100"],
+  [999, "999"],
+  [1000, "999"], // Max time display
+])("formats time correctly: %d -> %s", (time, expected) => {
+  render(<ControlPanel {...defaultProps} timeElapsed={time} />);
+  expect(screen.getByTestId("timer")).toHaveTextContent(expected);
 });
 
-test("formats mines remaining correctly", () => {
-  const cases = [
-    { mines: 0, expected: "000" },
-    { mines: 9, expected: "009" },
-    { mines: 10, expected: "010" },
-    { mines: 999, expected: "999" },
-    { mines: 1000, expected: "999" }, // Max mines display
-    { mines: -1, expected: "-01" },
-    { mines: -10, expected: "-10" },
-  ];
-
-  cases.forEach(({ mines, expected }) => {
-    render(<ControlPanel {...defaultProps} minesRemaining={mines} />);
-    expect(screen.getByTestId("mine-counter")).toHaveTextContent(expected);
-  });
+test.each([
+  [0, "000"],
+  [9, "009"],
+  [10, "010"],
+  [999, "999"],
+  [1000, "999"], // Max mines display
+  [-1, "-01"],
+  [-10, "-10"],
+])("formats mines remaining correctly: %d -> %s", (mines, expected) => {
+  render(<ControlPanel {...defaultProps} minesRemaining={mines} />);
+  expect(screen.getByTestId("mine-counter")).toHaveTextContent(expected);
 });
 
-test("displays correct emoji based on game status", () => {
-  const statusEmojis = [
-    { status: "playing" as GameStatus, emoji: "🙂" },
-    { status: "won" as GameStatus, emoji: "😎" },
-    { status: "lost" as GameStatus, emoji: "😵" },
-  ];
-
-  statusEmojis.forEach(({ status, emoji }) => {
-    render(<ControlPanel {...defaultProps} gameStatus={status} />);
-    expect(screen.getByRole("button")).toHaveTextContent(emoji);
-  });
+test.each([
+  ["playing", "🙂"],
+  ["won", "😎"],
+  ["lost", "😵"],
+])("displays correct emoji based on game status: %s", (status, emoji) => {
+  render(<ControlPanel {...defaultProps} gameStatus={status as GameStatus} />);
+  expect(screen.getByRole("button")).toHaveTextContent(emoji);
 });
 
 test("calls onReset when reset button is clicked", () => {
@@ -98,24 +87,11 @@ test("has correct accessibility attributes", () => {
   );
 });
 
-test("reset button has correct accessibility label based on game status", () => {
-  const statusLabels = [
-    {
-      status: "playing" as GameStatus,
-      label: "Game in progress. Click to restart.",
-    },
-    {
-      status: "won" as GameStatus,
-      label: "You won the game! Click to restart.",
-    },
-    {
-      status: "lost" as GameStatus,
-      label: "Game over. Click to restart.",
-    },
-  ];
-
-  statusLabels.forEach(({ status, label }) => {
-    render(<ControlPanel {...defaultProps} gameStatus={status} />);
-    expect(screen.getByRole("button")).toHaveAttribute("aria-label", label);
-  });
+test.each([
+  ["playing", "Game in progress. Click to restart."],
+  ["won", "You won the game! Click to restart."],
+  ["lost", "Game over. Click to restart."],
+])("reset button has correct accessibility label for %s", (status, label) => {
+  render(<ControlPanel {...defaultProps} gameStatus={status as GameStatus} />);
+  expect(screen.getByRole("button")).toHaveAttribute("aria-label", label);
 });
