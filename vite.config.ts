@@ -9,5 +9,15 @@ export default defineConfig({
   test: {
     environment: "happy-dom",
     setupFiles: "./src/setupTests.tsx",
+    coverage: {
+      include: ["src/**/*.ts?(x)"],
+      exclude: ["src/**/*.stories.ts?(x)"],
+      thresholds: {
+        lines: 70,
+        functions: 70,
+        statements: 70,
+        branches: 70,
+      },
+    },
   },
 });
