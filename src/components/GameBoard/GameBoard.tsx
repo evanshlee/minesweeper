@@ -24,12 +24,12 @@ const GameBoard: FC<GameBoardProps> = ({
     focusActive,
     cellRefs,
     gameBoardRef,
-    lastFocusedCellRef,
     handleArrowKey,
     handleBoardFocus,
     handleBoardBlur,
     handleBoardKeyDown,
     handleCellClick,
+    handleCellFocus,
   } = useBoardNavigation<HTMLDivElement>(board);
 
   // Keyboard navigation handler for individual cells
@@ -74,13 +74,6 @@ const GameBoard: FC<GameBoardProps> = ({
       handleCellClick,
       onCellClick,
     ]
-  );
-
-  const handleCellFocus = useCallback(
-    (x: number, y: number) => {
-      lastFocusedCellRef.current = `${y},${x}`;
-    },
-    [lastFocusedCellRef]
   );
 
   // Calculate current game state for aria-live announcements

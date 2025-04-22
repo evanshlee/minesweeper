@@ -4,15 +4,6 @@ import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { CellData } from "../../models/types";
 import { useBoardNavigation } from "./useBoardNavigation";
 
-// Create a proper interface for mocking focus
-interface HTMLElementWithFocus extends Element {
-  focus(): void;
-}
-
-// Mock Element.focus with proper type
-const mockFocus = vi.fn();
-(Element.prototype as HTMLElementWithFocus).focus = mockFocus;
-
 // Create test board that matches the CellData interface exactly
 const createTestBoard = (rows: number, cols: number): CellData[][] => {
   return Array(rows)
@@ -34,7 +25,6 @@ const createTestBoard = (rows: number, cols: number): CellData[][] => {
 };
 
 beforeEach(() => {
-  mockFocus.mockClear();
   // Mock document.activeElement
   Object.defineProperty(document, "activeElement", {
     writable: true,
@@ -54,7 +44,6 @@ test("initializes with correct default values", () => {
   expect(result.current.focusActive).toBe(false);
   expect(result.current.cellRefs.current).toBeDefined();
   expect(result.current.gameBoardRef.current).toBeNull();
-  expect(result.current.lastFocusedCellRef.current).toBeNull();
 });
 
 test.each([
@@ -141,11 +130,12 @@ test("focuses cell element when focus is active", () => {
   const board = createTestBoard(3, 3);
   const { result } = renderHook(() => useBoardNavigation(board));
 
+  const mockFocus = vi.fn();
+
   const mockButton = document.createElement("button");
   mockButton.setAttribute("data-testid", "cell-0-0"); // Add identifier for clarity
 
-  // Clear previous mock calls
-  mockFocus.mockClear();
+  mockButton.focus = mockFocus;
 
   // Use the exact key format expected by the hook - this must match how positionToKey works
   const key = "0,0"; // Make sure this exactly matches the key format in the hook
@@ -187,20 +177,27 @@ test("keeps track of last focused cell", () => {
     result.current.cellRefs.current = map;
   });
 
-  // Move focus to [1,1] and activate focus
+  // 직접 focusPosition을 설정하지 않고, handleCellClick 함수를 사용하여
+  // 내부적으로 lastFocusedCellRef와 focusPosition이 업데이트되도록 함
   act(() => {
-    result.current.focusPosition = [1, 1];
-    result.current.handleBoardFocus();
+    result.current.handleCellClick(1, 1, vi.fn());
   });
 
-  // Simulate the element being focused by manually calling handleCellFocus
+  // 포커스 위치가 [1, 1]로 설정되었는지 확인
+  expect(result.current.focusPosition).toEqual([1, 1]);
+
+  // 다른 셀로 이동했다가 다시 돌아오는 테스트 추가
   act(() => {
-    // This function would normally be called by the onFocus handler of the Cell
-    const [y, x] = [1, 1]; // The position we're focusing
-    result.current.cellRefs.current.get(`${y},${x}`)?.focus();
-    // Check if lastFocusedCellRef was properly updated
-    expect(result.current.lastFocusedCellRef.current).toBe("1,1");
+    result.current.handleArrowKey("ArrowRight"); // [1, 2]로 이동
   });
+
+  // 이전 포커스 셀로 다시 클릭
+  act(() => {
+    result.current.handleCellClick(1, 1, vi.fn());
+  });
+
+  // 다시 [1, 1]로 돌아왔는지 확인
+  expect(result.current.focusPosition).toEqual([1, 1]);
 });
 
 test("maintains mine revealed position", () => {
@@ -261,8 +258,7 @@ test("resets when board changes", () => {
   const newBoard = createTestBoard(4, 4);
   rerender({ board: newBoard });
 
-  // Check that internal state has been reset
-  expect(result.current.lastFocusedCellRef.current).toBeNull();
+  expect(result.current.focusPosition).toEqual([0, 0]);
 });
 
 test("handles board focus events correctly", () => {

@@ -23,7 +23,6 @@ interface BoardNavigationReturn<T> {
   focusActive: boolean;
   cellRefs: RefObject<Map<string, HTMLButtonElement | null>>;
   gameBoardRef: RefObject<HTMLDivElement | null>;
-  lastFocusedCellRef: RefObject<string | null>;
   handleArrowKey: (key: string) => void;
   handleBoardFocus: () => void;
   handleBoardBlur: FocusEventHandler<T>;
@@ -33,6 +32,7 @@ interface BoardNavigationReturn<T> {
     y: number,
     onCellClick: (x: number, y: number) => void
   ) => void;
+  handleCellFocus: (x: number, y: number) => void;
 }
 
 export function useBoardNavigation<T>(
@@ -119,6 +119,8 @@ export function useBoardNavigation<T>(
 
   useEffect(() => {
     cellRefs.current.clear();
+    setFocusPosition([0, 0]);
+
     // Don't reset mineRevealedRef yet as board might be updating after a mine click
     if (
       !mineRevealedRef.current ||
@@ -150,8 +152,25 @@ export function useBoardNavigation<T>(
   );
 
   const handleBoardFocus = useCallback(() => {
+    const [y, x] = focusPosition;
+    const key = positionToKey(y, x);
+    const element = cellRefs.current.get(key);
+
+    if (element) {
+      element.focus();
+      lastFocusedCellRef.current = key;
+    }
+
     setFocusActive(true);
-  }, []);
+  }, [focusPosition]);
+
+  const handleCellFocus = useCallback(
+    (x: number, y: number) => {
+      const key = positionToKey(y, x);
+      lastFocusedCellRef.current = key;
+    },
+    [lastFocusedCellRef]
+  );
 
   const handleBoardBlur = useCallback((e: FocusEvent<T>) => {
     if (
@@ -203,11 +222,11 @@ export function useBoardNavigation<T>(
     focusActive,
     cellRefs,
     gameBoardRef,
-    lastFocusedCellRef,
     handleArrowKey,
     handleBoardFocus,
     handleBoardBlur,
     handleBoardKeyDown,
     handleCellClick,
+    handleCellFocus,
   };
 }
