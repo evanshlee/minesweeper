@@ -125,3 +125,47 @@ export const checkWinCondition = (board: CellData[][]): boolean => {
   }
   return true;
 };
+
+// Toggle flag on a cell
+export const toggleFlag = (
+  board: CellData[][],
+  x: number,
+  y: number
+): CellData[][] => {
+  const newBoard = JSON.parse(JSON.stringify(board)) as CellData[][];
+
+  // Skip if cell is revealed
+  if (newBoard[y][x].isRevealed) {
+    return newBoard;
+  }
+
+  newBoard[y][x].isFlagged = !newBoard[y][x].isFlagged;
+  return newBoard;
+};
+
+// Handle revealing a mine
+export const revealMine = (
+  board: CellData[][],
+  x: number,
+  y: number
+): CellData[][] => {
+  const newBoard = JSON.parse(JSON.stringify(board)) as CellData[][];
+  newBoard[y][x].isRevealed = true;
+  return newBoard;
+};
+
+// Process the first click of the game
+export const handleFirstClick = (
+  board: CellData[][],
+  config: BoardConfig,
+  x: number,
+  y: number
+): CellData[][] => {
+  // First place mines (ensuring first click is safe)
+  let newBoard = placeMines(board, config, x, y);
+
+  // Then reveal the clicked cell
+  newBoard = revealCell(newBoard, x, y);
+
+  return newBoard;
+};

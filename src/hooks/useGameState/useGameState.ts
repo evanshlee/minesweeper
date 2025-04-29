@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   checkWinCondition,
+  handleFirstClick,
   initializeBoard,
-  placeMines,
   revealCell,
+  revealMine,
+  toggleFlag,
 } from "../../core/game";
 import {
   type BoardConfig,
@@ -80,37 +82,31 @@ export const useGameState = (
         return;
       }
 
-      let newBoard = [...board];
-
       if (isFirstClick) {
         // First click is always safe
-        newBoard = placeMines(board, config, x, y);
+        const newBoard = handleFirstClick(board, config, x, y);
         setBoard(newBoard);
         setIsFirstClick(false);
         setGameStatus("playing");
-
-        // Process the cell reveal on the updated board with mines
-        newBoard = revealCell(newBoard, x, y);
-        setBoard(newBoard);
 
         // Check win condition
         if (checkWinCondition(newBoard)) {
           setGameStatus("won");
         }
-        return; // Return after handling first click
+        return;
       }
 
       // For subsequent clicks
-      if (newBoard[y][x].isMine) {
+      if (board[y][x].isMine) {
         // Game over
-        newBoard[y][x].isRevealed = true;
+        const newBoard = revealMine(board, x, y);
         setBoard(newBoard);
         setGameStatus("lost");
         return;
       }
 
       // Reveal the clicked cell and potentially cascade
-      newBoard = revealCell(newBoard, x, y);
+      const newBoard = revealCell(board, x, y);
       setBoard(newBoard);
 
       // Check win condition
@@ -132,12 +128,7 @@ export const useGameState = (
         return;
       }
 
-      const newBoard = [...board];
-      newBoard[y][x] = {
-        ...newBoard[y][x],
-        isFlagged: !newBoard[y][x].isFlagged,
-      };
-
+      const newBoard = toggleFlag(board, x, y);
       setBoard(newBoard);
       setMinesRemaining((prev) =>
         newBoard[y][x].isFlagged ? prev - 1 : prev + 1
