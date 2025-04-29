@@ -21,61 +21,73 @@ const testConfig: BoardConfig = {
 };
 
 test("initializes with correct default values", () => {
-  const { result } = renderHook(() => useGameState("beginner"));
+  // Arrange
+  const difficulty = "beginner";
+  const expectedMines = 10;
+  const expectedBoardSize = 9;
 
+  // Act
+  const { result } = renderHook(() => useGameState(difficulty));
+
+  // Assert
   expect(result.current.gameStatus).toBe("idle");
   expect(result.current.timeElapsed).toBe(0);
-  expect(result.current.minesRemaining).toBe(10); // Beginner mode has 10 mines
-  expect(result.current.board.length).toBe(9); // Beginner board is 9x9
-  expect(result.current.board[0].length).toBe(9);
+  expect(result.current.minesRemaining).toBe(expectedMines); // Beginner mode has 10 mines
+  expect(result.current.board.length).toBe(expectedBoardSize); // Beginner board is 9x9
+  expect(result.current.board[0].length).toBe(expectedBoardSize);
 });
 
 test("resets the game state when resetGame is called", () => {
+  // Arrange
   const { result } = renderHook(() => useGameState("custom", testConfig));
 
-  // Change some state
+  // Act - First change state by clicking
   act(() => {
-    result.current.handleCellClick(0, 0); // First click
+    result.current.handleCellClick(0, 0);
   });
 
+  // Assert - Verify game started
   expect(result.current.gameStatus).toBe("playing");
 
-  // Reset game
+  // Act - Reset the game
   act(() => {
     result.current.resetGame();
   });
 
+  // Assert - Verify reset state
   expect(result.current.gameStatus).toBe("idle");
   expect(result.current.timeElapsed).toBe(0);
   expect(result.current.minesRemaining).toBe(testConfig.mines);
 });
 
 test("handles the first click correctly", () => {
+  // Arrange
   const { result } = renderHook(() => useGameState("custom", testConfig));
+  const clickX = 0;
+  const clickY = 0;
 
-  // First click
+  // Act - Perform first click
   act(() => {
-    result.current.handleCellClick(0, 0);
+    result.current.handleCellClick(clickX, clickY);
   });
 
-  // Verify observable behavior after first click
+  // Assert
   expect(result.current.gameStatus).toBe("playing");
-  expect(result.current.board[0][0].isRevealed).toBe(true);
-  expect(result.current.board[0][0].isMine).toBe(false); // First click is always safe
-
-  // Check that timer has started
-  expect(result.current.timeElapsed).toBe(0);
+  expect(result.current.board[clickY][clickX].isRevealed).toBe(true);
+  expect(result.current.board[clickY][clickX].isMine).toBe(false); // First click is always safe
+  expect(result.current.timeElapsed).toBe(0); // Timer starts at 0
 });
 
 test("handles revealing a non-mine cell correctly", () => {
+  // Arrange
   const { result } = renderHook(() => useGameState("custom", testConfig));
 
-  // First click to start the game
+  // Act - First click to start the game
   act(() => {
     result.current.handleCellClick(0, 0);
   });
 
-  // Find a non-mine cell to click
+  // Arrange - Find a non-mine cell to click
   let nonMineX = -1,
     nonMineY = -1;
   for (let y = 0; y < result.current.board.length; y++) {
@@ -92,63 +104,69 @@ test("handles revealing a non-mine cell correctly", () => {
     if (nonMineX !== -1) break;
   }
 
+  // Act - Click on the non-mine cell (if found)
   if (nonMineX !== -1) {
-    // Click on the non-mine cell
     act(() => {
       result.current.handleCellClick(nonMineX, nonMineY);
     });
 
-    // Verify the cell was revealed
+    // Assert
     expect(result.current.board[nonMineY][nonMineX].isRevealed).toBe(true);
     expect(result.current.gameStatus).toBe("playing");
   }
 });
 
 test("handles flagging a cell correctly", () => {
+  // Arrange
   const { result } = renderHook(() => useGameState("custom", testConfig));
+  const cellX = 0;
+  const cellY = 0;
 
-  // Flag a cell
+  // Act - Flag a cell
   act(() => {
-    result.current.handleCellFlag(0, 0);
+    result.current.handleCellFlag(cellX, cellY);
   });
 
-  // Mines remaining should decrease
+  // Assert
   expect(result.current.minesRemaining).toBe(testConfig.mines - 1);
-  expect(result.current.board[0][0].isFlagged).toBe(true);
+  expect(result.current.board[cellY][cellX].isFlagged).toBe(true);
 
-  // Unflag the same cell
+  // Act - Unflag the same cell
   act(() => {
-    result.current.handleCellFlag(0, 0);
+    result.current.handleCellFlag(cellX, cellY);
   });
 
-  // Mines remaining should go back up
+  // Assert
   expect(result.current.minesRemaining).toBe(testConfig.mines);
-  expect(result.current.board[0][0].isFlagged).toBe(false);
+  expect(result.current.board[cellY][cellX].isFlagged).toBe(false);
 });
 
 test("starts timer when game begins and stops when game ends", () => {
+  // Arrange
   const { result } = renderHook(() => useGameState("custom", testConfig));
+  const initialClickX = 0;
+  const initialClickY = 0;
 
-  // First click to start game
+  // Act - First click to start game
   act(() => {
-    result.current.handleCellClick(0, 0);
+    result.current.handleCellClick(initialClickX, initialClickY);
   });
 
-  // Timer should start
+  // Assert - Timer should start at 0
   expect(result.current.timeElapsed).toBe(0);
 
-  // Advance timer
+  // Act - Advance timer
   act(() => {
     vi.advanceTimersByTime(3000); // 3 seconds
   });
 
+  // Assert - Timer should advance
   expect(result.current.timeElapsed).toBe(3);
 
-  // Find a mine to end the game
+  // Arrange - Find a mine to end the game
   let mineX = -1,
     mineY = -1;
 
-  // Find mine location
   for (let y = 0; y < result.current.board.length; y++) {
     for (let x = 0; x < result.current.board[0].length; x++) {
       if (result.current.board[y][x].isMine) {
@@ -161,42 +179,48 @@ test("starts timer when game begins and stops when game ends", () => {
   }
 
   if (mineX !== -1) {
-    // Click on a mine to end game
+    // Act - Click on a mine to end game
     act(() => {
       result.current.handleCellClick(mineX, mineY);
     });
 
-    // Check game status
+    // Assert - Game should be lost
     expect(result.current.gameStatus).toBe("lost");
 
-    // Timer should stop
+    // Act - Try to advance timer further
     act(() => {
       vi.advanceTimersByTime(2000); // 2 more seconds
     });
 
-    // Time should still be 3, not 5
+    // Assert - Time should remain at 3 (timer stopped)
     expect(result.current.timeElapsed).toBe(3);
   }
 });
 
 test("resets game when difficulty changes", () => {
+  // Arrange
+  const initialDifficulty = "beginner";
+  const newDifficulty = "intermediate";
+  const expectedMines = 40; // Intermediate mode has 40 mines
+
   const { result, rerender } = renderHook(
     (props: { difficulty: Difficulty; customConfig?: BoardConfig }) =>
       useGameState(props.difficulty, props.customConfig),
-    { initialProps: { difficulty: "beginner" } }
+    { initialProps: { difficulty: initialDifficulty } }
   );
 
-  // First click to start game
+  // Act - First click to start game
   act(() => {
     result.current.handleCellClick(0, 0);
   });
 
+  // Assert - Game should be playing
   expect(result.current.gameStatus).toBe("playing");
 
-  // Change difficulty
-  rerender({ difficulty: "intermediate" });
+  // Act - Change difficulty
+  rerender({ difficulty: newDifficulty });
 
-  // Game should reset
+  // Assert - Game should reset
   expect(result.current.gameStatus).toBe("idle");
-  expect(result.current.minesRemaining).toBe(40); // Intermediate mode has 40 mines
+  expect(result.current.minesRemaining).toBe(expectedMines);
 });
