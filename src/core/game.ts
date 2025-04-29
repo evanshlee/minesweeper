@@ -1,4 +1,4 @@
-import { BoardConfig, CellData } from "../models/types";
+import { BoardConfig, CellData } from "./types";
 
 // Initialize an empty board
 export const initializeBoard = (config: BoardConfig): CellData[][] => {

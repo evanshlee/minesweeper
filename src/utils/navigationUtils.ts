@@ -1,4 +1,4 @@
-import { CellData } from "../models/types";
+import { CellData } from "../core/types";
 
 export interface BoardDimensions {
   rows: number;
@@ -14,21 +14,6 @@ export const getBoardDimensions = (board: CellData[][]): BoardDimensions => ({
   rows: board.length,
   cols: board[0]?.length || 0,
 });
-
-export const calculateNewPositionFromKey = (
-  key: string,
-  currentPos: [number, number],
-  dimensions: BoardDimensions
-): [number, number] => {
-  const { rows, cols } = dimensions;
-  const [y, x] = keyToPosition(key);
-
-  if (y >= 0 && y < rows && x >= 0 && x < cols) {
-    return [y, x];
-  }
-
-  return currentPos;
-};
 
 export const calculateArrowKeyMovement = (
   key: string,

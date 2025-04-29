@@ -1,11 +1,11 @@
 import { describe, expect, test } from "vitest";
-import { BoardConfig } from "../models/types";
 import {
   checkWinCondition,
   initializeBoard,
   placeMines,
   revealCell,
-} from "./gameUtils";
+} from "./game";
+import { BoardConfig } from "./types";
 
 const testConfig: BoardConfig = {
   rows: 5,

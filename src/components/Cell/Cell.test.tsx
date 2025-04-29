@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { beforeEach, expect, test, vi } from "vitest";
-import { CellData } from "../../models/types";
+import { CellData } from "../../core/types";
 import { Cell } from "./Cell";
 
 const defaultProps: Omit<ComponentProps<typeof Cell>, "cell"> = {

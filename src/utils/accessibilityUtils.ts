@@ -1,4 +1,4 @@
-import type { CellData } from "../models/types";
+import type { CellData } from "../core/types";
 
 /**
  * Function to generate ARIA label for a cell
