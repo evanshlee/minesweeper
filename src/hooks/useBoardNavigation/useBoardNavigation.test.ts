@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import type { FocusEvent, KeyboardEvent } from "react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { CellData } from "../../models/types";
+import { CellData } from "../../core/types";
 import { useBoardNavigation } from "./useBoardNavigation";
 
 // Create test board that matches the CellData interface exactly

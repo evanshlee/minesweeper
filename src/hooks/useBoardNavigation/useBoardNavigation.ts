@@ -10,7 +10,7 @@ import {
   type KeyboardEventHandler,
   type RefObject,
 } from "react";
-import { CellData } from "../../models/types";
+import { CellData } from "../../core/types";
 import {
   calculateArrowKeyMovement,
   getBoardDimensions,

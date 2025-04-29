@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import type { BoardConfig, Difficulty } from "../../models/types";
+import type { BoardConfig, Difficulty } from "../../core/types";
 import { useGameState } from "./useGameState";
 
 // Timer mock

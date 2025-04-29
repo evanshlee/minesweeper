@@ -1,6 +1,6 @@
 import { useCallback, type FC, type KeyboardEvent } from "react";
+import { CellData, GameStatus } from "../../core/types";
 import { useBoardNavigation } from "../../hooks/useBoardNavigation/useBoardNavigation";
-import { CellData, GameStatus } from "../../models/types";
 import { Cell } from "../Cell/Cell";
 import "./GameBoard.css";
 

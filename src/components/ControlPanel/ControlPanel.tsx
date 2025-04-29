@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { GameStatus } from "../../models/types";
+import { GameStatus } from "../../core/types";
 import "./ControlPanel.css";
 
 interface ControlPanelProps {
