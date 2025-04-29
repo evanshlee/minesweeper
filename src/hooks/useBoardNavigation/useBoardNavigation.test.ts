@@ -37,9 +37,14 @@ afterEach(() => {
 });
 
 test("initializes with correct default values", () => {
-  const board = createTestBoard(4, 4);
+  // Arrange
+  const boardSize = 4;
+  const board = createTestBoard(boardSize, boardSize);
+
+  // Act
   const { result } = renderHook(() => useBoardNavigation(board));
 
+  // Assert
   expect(result.current.focusPosition).toEqual([0, 0]);
   expect(result.current.focusActive).toBe(false);
   expect(result.current.cellRefs.current).toBeDefined();
@@ -54,11 +59,13 @@ test.each([
 ])(
   "updates focus to $expectedPos when $direction is pressed",
   ({ direction, previousPos, expectedPos }) => {
+    // Arrange
     const board = createTestBoard(4, 4);
     const { result } = renderHook(() => useBoardNavigation(board));
 
     // Move to previous position if specified
     if (previousPos) {
+      // Additional arrangement - setting up starting position
       if (previousPos[0] > 0) {
         act(() => {
           result.current.handleArrowKey("ArrowDown");
@@ -71,10 +78,12 @@ test.each([
       }
     }
 
+    // Act
     act(() => {
       result.current.handleArrowKey(direction);
     });
 
+    // Assert
     expect(result.current.focusPosition).toEqual(expectedPos);
   }
 );
@@ -107,6 +116,7 @@ test.each([
 ])(
   "prevents moving $description beyond board boundaries",
   ({ setupSteps, direction, expected }) => {
+    // Arrange
     const board = createTestBoard(2, 2);
     const { result } = renderHook(() => useBoardNavigation(board));
 
@@ -117,130 +127,116 @@ test.each([
       });
     });
 
-    // Try to move out of bounds
+    // Act
     act(() => {
       result.current.handleArrowKey(direction);
     });
 
+    // Assert
     expect(result.current.focusPosition).toEqual(expected);
   }
 );
 
 test("focuses cell element when focus is active", () => {
+  // Arrange
   const board = createTestBoard(3, 3);
   const { result } = renderHook(() => useBoardNavigation(board));
-
   const mockFocus = vi.fn();
 
   const mockButton = document.createElement("button");
-  mockButton.setAttribute("data-testid", "cell-0-0"); // Add identifier for clarity
-
+  mockButton.setAttribute("data-testid", "cell-0-0");
   mockButton.focus = mockFocus;
 
-  // Use the exact key format expected by the hook - this must match how positionToKey works
-  const key = "0,0"; // Make sure this exactly matches the key format in the hook
+  const key = "0,0";
   const map = new Map<string, HTMLButtonElement | null>();
   map.set(key, mockButton);
 
-  // Update the refs with our mock objects
+  // Set up refs and focus position
   act(() => {
     result.current.cellRefs.current = map;
-  });
-
-  // Ensure focus position is set to [0,0]
-  act(() => {
     result.current.focusPosition = [0, 0];
   });
 
-  // Activate focus
+  // Act
   act(() => {
     result.current.handleBoardFocus();
   });
 
-  // Verify focus was called
+  // Assert
   expect(mockFocus).toHaveBeenCalled();
 });
 
 test("keeps track of last focused cell", () => {
+  // Arrange
   const board = createTestBoard(3, 3);
   const { result } = renderHook(() => useBoardNavigation(board));
-
   const mockButton = document.createElement("button");
-
-  // Set the proper key format
   const key = "1,1";
   const map = new Map<string, HTMLButtonElement | null>();
   map.set(key, mockButton);
 
-  // Update the refs
   act(() => {
     result.current.cellRefs.current = map;
   });
 
-  // 직접 focusPosition을 설정하지 않고, handleCellClick 함수를 사용하여
-  // 내부적으로 lastFocusedCellRef와 focusPosition이 업데이트되도록 함
+  // Act - Click on a cell at [1,1]
   act(() => {
     result.current.handleCellClick(1, 1, vi.fn());
   });
 
-  // 포커스 위치가 [1, 1]로 설정되었는지 확인
+  // Assert - Check if focus position is updated
   expect(result.current.focusPosition).toEqual([1, 1]);
 
-  // 다른 셀로 이동했다가 다시 돌아오는 테스트 추가
+  // Act - Move to a different cell and then back
   act(() => {
-    result.current.handleArrowKey("ArrowRight"); // [1, 2]로 이동
+    result.current.handleArrowKey("ArrowRight"); // Move to [1, 2]
   });
 
-  // 이전 포커스 셀로 다시 클릭
   act(() => {
-    result.current.handleCellClick(1, 1, vi.fn());
+    result.current.handleCellClick(1, 1, vi.fn()); // Click back on [1, 1]
   });
 
-  // 다시 [1, 1]로 돌아왔는지 확인
+  // Assert - Check if we're back to the original position
   expect(result.current.focusPosition).toEqual([1, 1]);
 });
 
 test("maintains mine revealed position", () => {
-  // Create a board with a mine at position [1,1]
+  // Arrange
   const board = createTestBoard(3, 3);
-  board[1][1].isMine = true; // Explicitly mark cell as a mine
-
+  board[1][1].isMine = true; // Mark cell as a mine
   const { result } = renderHook(() => useBoardNavigation(board));
 
-  // Move to position [1,1] explicitly
+  // Act - Move to mine position
   act(() => {
     result.current.handleArrowKey("ArrowRight");
     result.current.handleArrowKey("ArrowDown");
   });
 
-  // Create a mock callback function that simulates game logic
+  // Mock cell click callback that marks cell as revealed
   const mockCallback = vi.fn((x, y) => {
-    // This function should be called when a cell is clicked
-    // Mark the position [1,1] as revealed in our simulation
     board[y][x].isRevealed = true;
   });
 
-  // Click the cell at [1,1] which is a mine
+  // Act - Click on the mine cell
   act(() => {
     result.current.handleCellClick(1, 1, mockCallback);
   });
 
-  // Verify the callback was called
+  // Assert
   expect(mockCallback).toHaveBeenCalledWith(1, 1);
-
-  // Verify the starting position before trying to navigate away
   expect(result.current.focusPosition).toEqual([1, 1]);
 
-  // When we try to navigate, focus should stay at [1,1] because it's a mine
+  // Act - Try to navigate away
   act(() => {
     result.current.handleArrowKey("ArrowRight");
   });
 
-  // Focus should stay at the "mine" position
+  // Assert - Focus should remain on mine
   expect(result.current.focusPosition).toEqual([1, 1]);
 });
 
 test("resets when board changes", () => {
+  // Arrange
   const initialBoard = createTestBoard(3, 3);
   const { result, rerender } = renderHook(
     ({ board }) => useBoardNavigation(board),
@@ -249,45 +245,48 @@ test("resets when board changes", () => {
     }
   );
 
-  // Click a cell
+  // Act - First click on a cell, then change the board
   act(() => {
     result.current.handleCellClick(1, 1, vi.fn());
   });
 
-  // Create a new board and rerender
   const newBoard = createTestBoard(4, 4);
+
+  // Act - Rerender with new board
   rerender({ board: newBoard });
 
+  // Assert
   expect(result.current.focusPosition).toEqual([0, 0]);
 });
 
 test("handles board focus events correctly", () => {
+  // Arrange
   const board = createTestBoard(3, 3);
   const { result } = renderHook(() => useBoardNavigation(board));
+  const gameBoard = document.createElement("div");
+  const outsideElement = document.createElement("div");
 
+  // Act - Focus on board
   act(() => {
     result.current.handleBoardFocus();
   });
 
+  // Assert
   expect(result.current.focusActive).toBe(true);
 
-  // 게임보드 ref를 div로 설정
-  const gameBoard = document.createElement("div");
+  // Arrange for blur test
   result.current.gameBoardRef.current = gameBoard;
-
-  // 보드 외부 요소 생성
-  const outsideElement = document.createElement("div");
-
-  // DOM API를 사용한 FocusEvent 객체 생성
   const blurEvent = new FocusEvent("blur", {
     bubbles: true,
     relatedTarget: outsideElement,
   }) as unknown as FocusEvent;
 
+  // Act - Blur event outside board
   act(() => {
     result.current.handleBoardBlur(blurEvent);
   });
 
+  // Assert
   expect(result.current.focusActive).toBe(false);
 });
 
@@ -308,6 +307,7 @@ test.each([
 ])(
   "handles $key key correctly in keyboard navigation",
   ({ key, expectedPos, previousPos, shouldPreventDefault }) => {
+    // Arrange
     const board = createTestBoard(3, 3);
     const { result } = renderHook(() => useBoardNavigation(board));
 
@@ -329,6 +329,7 @@ test.each([
       }
     }
 
+    // Create event object for test
     const keyEvent = new KeyboardEvent("keydown", {
       key,
       bubbles: true,
@@ -337,16 +338,17 @@ test.each([
 
     const preventDefaultSpy = vi.spyOn(keyEvent, "preventDefault");
 
+    // Act
     act(() => {
       result.current.handleBoardKeyDown(keyEvent);
     });
 
+    // Assert
     if (shouldPreventDefault) {
       expect(preventDefaultSpy).toHaveBeenCalled();
     } else {
       expect(preventDefaultSpy).not.toHaveBeenCalled();
     }
-
     expect(result.current.focusPosition).toEqual(expectedPos);
   }
 );
