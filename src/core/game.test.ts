@@ -1,9 +1,12 @@
 import { describe, expect, test } from "vitest";
 import {
   checkWinCondition,
+  handleFirstClick,
   initializeBoard,
   placeMines,
   revealCell,
+  revealMine,
+  toggleFlag,
 } from "./game";
 import { BoardConfig } from "./types";
 
@@ -147,5 +150,125 @@ describe("checkWinCondition", () => {
     board[1][0].isRevealed = true;
 
     expect(checkWinCondition(board)).toBe(false);
+  });
+});
+
+describe("toggleFlag", () => {
+  test("adds a flag to an unflagged cell", () => {
+    const board = initializeBoard(testConfig);
+    const newBoard = toggleFlag(board, 2, 2);
+
+    expect(newBoard[2][2].isFlagged).toBe(true);
+  });
+
+  test("removes a flag from a flagged cell", () => {
+    const board = initializeBoard(testConfig);
+    board[2][2].isFlagged = true;
+    const newBoard = toggleFlag(board, 2, 2);
+
+    expect(newBoard[2][2].isFlagged).toBe(false);
+  });
+
+  test("does not toggle flag on revealed cells", () => {
+    const board = initializeBoard(testConfig);
+    board[2][2].isRevealed = true;
+    const newBoard = toggleFlag(board, 2, 2);
+
+    expect(newBoard[2][2].isFlagged).toBe(false);
+  });
+
+  test("does not modify the original board", () => {
+    const board = initializeBoard(testConfig);
+    toggleFlag(board, 2, 2);
+
+    expect(board[2][2].isFlagged).toBe(false);
+  });
+});
+
+describe("revealMine", () => {
+  test("reveals a mine cell", () => {
+    const board = initializeBoard(testConfig);
+    board[2][2].isMine = true;
+    const newBoard = revealMine(board, 2, 2);
+
+    expect(newBoard[2][2].isRevealed).toBe(true);
+    expect(newBoard[2][2].isMine).toBe(true); // Mine status preserved
+  });
+
+  test("works on non-mine cells too", () => {
+    const board = initializeBoard(testConfig);
+    const newBoard = revealMine(board, 2, 2);
+
+    expect(newBoard[2][2].isRevealed).toBe(true);
+  });
+
+  test("does not affect other properties of the cell", () => {
+    const board = initializeBoard(testConfig);
+    board[2][2].isFlagged = true;
+    board[2][2].adjacentMines = 3;
+    const newBoard = revealMine(board, 2, 2);
+
+    expect(newBoard[2][2].isRevealed).toBe(true);
+    expect(newBoard[2][2].isFlagged).toBe(true); // Flag status preserved
+    expect(newBoard[2][2].adjacentMines).toBe(3); // Adjacent mines count preserved
+  });
+});
+
+describe("handleFirstClick", () => {
+  test("places mines and reveals the first clicked cell", () => {
+    const board = initializeBoard(testConfig);
+    const newBoard = handleFirstClick(board, testConfig, 2, 2);
+
+    // Cell should be revealed
+    expect(newBoard[2][2].isRevealed).toBe(true);
+    // Cell should not be a mine
+    expect(newBoard[2][2].isMine).toBe(false);
+
+    // Count total mines on board
+    let mineCount = 0;
+    for (let y = 0; y < testConfig.rows; y++) {
+      for (let x = 0; x < testConfig.columns; x++) {
+        if (newBoard[y][x].isMine) {
+          mineCount++;
+        }
+      }
+    }
+    expect(mineCount).toBe(testConfig.mines);
+
+    // Check if surrounding cells are not mines
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        const y = 2 + dy;
+        const x = 2 + dx;
+        if (y >= 0 && y < testConfig.rows && x >= 0 && x < testConfig.columns) {
+          expect(newBoard[y][x].isMine).toBe(false);
+        }
+      }
+    }
+  });
+
+  test("cascades reveal for empty cells on first click", () => {
+    // Create a special test config with minimal mines to ensure empty areas
+    const minimalMinesConfig: BoardConfig = {
+      rows: 5,
+      columns: 5,
+      mines: 1,
+    };
+
+    const board = initializeBoard(minimalMinesConfig);
+    const newBoard = handleFirstClick(board, minimalMinesConfig, 2, 2);
+
+    // Count revealed cells - should be more than just the clicked cell if cascade worked
+    let revealedCount = 0;
+    for (let y = 0; y < minimalMinesConfig.rows; y++) {
+      for (let x = 0; x < minimalMinesConfig.columns; x++) {
+        if (newBoard[y][x].isRevealed) {
+          revealedCount++;
+        }
+      }
+    }
+
+    // With minimal mines and click in center, multiple cells should be revealed
+    expect(revealedCount).toBeGreaterThan(1);
   });
 });
