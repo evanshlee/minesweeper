@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   checkWinCondition,
+  DifficultySettings,
   handleFirstClick,
   initializeBoard,
   revealCell,
@@ -11,7 +12,6 @@ import {
   type BoardConfig,
   type CellData,
   type Difficulty,
-  DifficultySettings,
   type GameStatus,
 } from "../../core/types";
 
