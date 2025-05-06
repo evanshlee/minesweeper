@@ -1,12 +1,7 @@
-import {
-  checkWinCondition,
-  DifficultySettings,
-  handleFirstClick,
-  initializeBoard,
-  revealCell,
-  revealMine,
-  toggleFlag,
-} from "./game";
+import { BoardManager } from "./BoardManager";
+import { GameConfigManager } from "./GameConfigManager";
+import { GameStateManager } from "./GameStateManager";
+import { MessageGenerator } from "./MessageGenerator";
 import {
   type BoardConfig,
   type CellData,
@@ -15,65 +10,52 @@ import {
 } from "./types";
 
 export class GameEngine {
-  private board: CellData[][];
-  private gameStatus: GameStatus;
-  private difficulty: Difficulty;
-  private customConfig?: BoardConfig;
-  private minesRemaining: number;
-  private isFirstClick: boolean;
-  private config: BoardConfig;
+  private boardManager: BoardManager;
+  private stateManager: GameStateManager;
+  private configManager: GameConfigManager;
+  private messageGenerator: MessageGenerator;
 
   constructor(
     initialDifficulty: Difficulty = "beginner",
     initialCustomConfig?: BoardConfig
   ) {
-    this.difficulty = initialDifficulty;
-    this.customConfig = initialCustomConfig;
-
-    this.config = this.getConfig();
-    this.board = initializeBoard(this.config);
-    this.gameStatus = "idle";
-    this.minesRemaining = this.config.mines;
-    this.isFirstClick = true;
-  }
-
-  private getConfig(): BoardConfig {
-    return this.difficulty === "custom" && this.customConfig
-      ? this.customConfig
-      : DifficultySettings[this.difficulty as Exclude<Difficulty, "custom">];
+    this.configManager = new GameConfigManager(
+      initialDifficulty,
+      initialCustomConfig
+    );
+    const config = this.configManager.getConfig();
+    this.boardManager = new BoardManager(config);
+    this.stateManager = new GameStateManager(config.mines);
+    this.messageGenerator = new MessageGenerator();
   }
 
   getBoard(): CellData[][] {
-    return [...this.board];
+    return this.boardManager.getBoard();
   }
 
   getStatus(): GameStatus {
-    return this.gameStatus;
+    return this.stateManager.getStatus();
   }
 
   getMinesRemaining(): number {
-    return this.minesRemaining;
+    return this.stateManager.getMinesRemaining();
   }
 
   getDifficulty(): Difficulty {
-    return this.difficulty;
+    return this.configManager.getDifficulty();
   }
 
   resetGame(): void {
-    this.config = this.getConfig();
-    this.board = initializeBoard(this.config);
-    this.gameStatus = "idle";
-    this.minesRemaining = this.config.mines;
-    this.isFirstClick = true;
+    const config = this.configManager.getConfig();
+    this.boardManager.initializeBoard(config);
+    this.stateManager.resetState(config.mines);
   }
 
   setDifficulty(
     newDifficulty: Difficulty,
     newCustomConfig?: BoardConfig
   ): void {
-    this.difficulty = newDifficulty;
-    this.customConfig = newCustomConfig;
-    this.config = this.getConfig();
+    this.configManager.setDifficulty(newDifficulty, newCustomConfig);
   }
 
   handleCellClick(
@@ -82,47 +64,46 @@ export class GameEngine {
   ): { boardChanged: boolean; board: CellData[][]; status: GameStatus } {
     // 이미 게임이 종료되었거나 깃발이 꽂힌 셀은 무시
     if (
-      this.gameStatus === "won" ||
-      this.gameStatus === "lost" ||
-      this.board[y][x].isFlagged
+      this.stateManager.isGameEnded() ||
+      this.boardManager.isCellFlagged(x, y)
     ) {
       return {
         boardChanged: false,
-        board: this.board,
-        status: this.gameStatus,
+        board: this.getBoard(),
+        status: this.getStatus(),
       };
     }
 
-    if (this.isFirstClick) {
+    if (this.stateManager.isFirstClick()) {
       // 첫 클릭은 항상 안전하게 처리
-      this.board = handleFirstClick(this.board, this.config, x, y);
-      this.isFirstClick = false;
-      this.gameStatus = "playing";
+      const board = this.boardManager.handleFirstClick(
+        this.configManager.getConfig(),
+        x,
+        y
+      );
+      this.stateManager.setFirstClick(false);
+      this.stateManager.setStatus("playing");
 
       // 승리 조건 확인
-      if (checkWinCondition(this.board)) {
-        this.gameStatus = "won";
-      }
+      this.stateManager.checkWinCondition(board);
 
-      return { boardChanged: true, board: this.board, status: this.gameStatus };
+      return { boardChanged: true, board, status: this.getStatus() };
     }
 
     // 지뢰를 클릭한 경우
-    if (this.board[y][x].isMine) {
-      this.board = revealMine(this.board, x, y);
-      this.gameStatus = "lost";
-      return { boardChanged: true, board: this.board, status: this.gameStatus };
+    if (this.boardManager.isCellMine(x, y)) {
+      const board = this.boardManager.revealMine(x, y);
+      this.stateManager.setStatus("lost");
+      return { boardChanged: true, board, status: this.getStatus() };
     }
 
     // 일반 셀 클릭
-    this.board = revealCell(this.board, x, y);
+    const board = this.boardManager.revealCell(x, y);
 
     // 승리 조건 확인
-    if (checkWinCondition(this.board)) {
-      this.gameStatus = "won";
-    }
+    this.stateManager.checkWinCondition(board);
 
-    return { boardChanged: true, board: this.board, status: this.gameStatus };
+    return { boardChanged: true, board, status: this.getStatus() };
   }
 
   handleCellFlag(
@@ -131,26 +112,27 @@ export class GameEngine {
   ): { boardChanged: boolean; board: CellData[][]; minesRemaining: number } {
     // 이미 게임이 종료되었거나 공개된 셀은 무시
     if (
-      this.gameStatus === "won" ||
-      this.gameStatus === "lost" ||
-      this.board[y][x].isRevealed
+      this.stateManager.isGameEnded() ||
+      this.boardManager.isCellRevealed(x, y)
     ) {
       return {
         boardChanged: false,
-        board: this.board,
-        minesRemaining: this.minesRemaining,
+        board: this.getBoard(),
+        minesRemaining: this.getMinesRemaining(),
       };
     }
 
-    this.board = toggleFlag(this.board, x, y);
-    this.minesRemaining = this.board[y][x].isFlagged
-      ? this.minesRemaining - 1
-      : this.minesRemaining + 1;
+    const wasAlreadyFlagged = this.boardManager.isCellFlagged(x, y);
+    const board = this.boardManager.toggleFlag(x, y);
+
+    // 깃발 상태가 변경되었으므로 남은 지뢰 수 업데이트
+    // 이전에 깃발이 있었다면 +1, 없었다면 -1
+    this.stateManager.updateMinesRemaining(wasAlreadyFlagged ? 1 : -1);
 
     return {
       boardChanged: true,
-      board: this.board,
-      minesRemaining: this.minesRemaining,
+      board,
+      minesRemaining: this.getMinesRemaining(),
     };
   }
 
@@ -159,19 +141,10 @@ export class GameEngine {
     previousStatus: GameStatus,
     timeElapsed: number
   ): string {
-    if (currentStatus !== previousStatus) {
-      switch (currentStatus) {
-        case "playing":
-          if (previousStatus === "idle") {
-            return "Game started. Good luck!";
-          }
-          break;
-        case "won":
-          return `Congratulations! You won in ${timeElapsed} seconds!`;
-        case "lost":
-          return "Game over! You hit a mine.";
-      }
-    }
-    return "";
+    return this.messageGenerator.getStatusMessage(
+      currentStatus,
+      previousStatus,
+      timeElapsed
+    );
   }
 }
