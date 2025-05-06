@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import type { BoardConfig, Difficulty } from "../../core/types";
+import type { BoardConfig } from "../../core/types";
 import { useGameState } from "./useGameState";
 
 // Timer mock
@@ -203,11 +203,7 @@ test("resets game when difficulty changes", () => {
   const newDifficulty = "intermediate";
   const expectedMines = 40; // Intermediate mode has 40 mines
 
-  const { result, rerender } = renderHook(
-    (props: { difficulty: Difficulty; customConfig?: BoardConfig }) =>
-      useGameState(props.difficulty, props.customConfig),
-    { initialProps: { difficulty: initialDifficulty } }
-  );
+  const { result } = renderHook(() => useGameState(initialDifficulty));
 
   // Act - First click to start game
   act(() => {
@@ -217,10 +213,81 @@ test("resets game when difficulty changes", () => {
   // Assert - Game should be playing
   expect(result.current.gameStatus).toBe("playing");
 
-  // Act - Change difficulty
-  rerender({ difficulty: newDifficulty });
+  // Act - Change difficulty using handleDifficultySelect
+  act(() => {
+    result.current.handleDifficultySelect(newDifficulty);
+  });
 
   // Assert - Game should reset
   expect(result.current.gameStatus).toBe("idle");
   expect(result.current.minesRemaining).toBe(expectedMines);
+});
+
+test("updates status message when game status changes", () => {
+  // Arrange
+  const { result } = renderHook(() => useGameState("beginner"));
+
+  // Assert - Initial state
+  expect(result.current.statusMessage).toBe("");
+  expect(result.current.gameStatus).toBe("idle");
+
+  // Act - Start game with first click
+  act(() => {
+    result.current.handleCellClick(4, 4);
+  });
+
+  // Assert - Check status after game starts
+  expect(result.current.statusMessage).toBe("Game started. Good luck!");
+  expect(result.current.gameStatus).toBe("playing");
+
+  // Act - Reset game
+  act(() => {
+    result.current.resetGame();
+  });
+
+  // Assert - Check status after reset
+  expect(result.current.statusMessage).toBe("");
+  expect(result.current.gameStatus).toBe("idle");
+});
+
+test("handles difficulty selection with custom config", () => {
+  // Arrange
+  const { result } = renderHook(() => useGameState());
+
+  // Assert - Default difficulty is beginner
+  expect(result.current.difficulty).toBe("beginner");
+
+  const customConfig: BoardConfig = {
+    rows: 10,
+    columns: 10,
+    mines: 15,
+  };
+
+  // Act - Change to custom difficulty
+  act(() => {
+    result.current.handleDifficultySelect("custom", customConfig);
+  });
+
+  // Assert - Check difficulty changed and game reset
+  expect(result.current.difficulty).toBe("custom");
+  expect(result.current.minesRemaining).toBe(customConfig.mines);
+  expect(result.current.board.length).toBe(customConfig.rows);
+  expect(result.current.board[0].length).toBe(customConfig.columns);
+  expect(result.current.gameStatus).toBe("idle");
+
+  // Act - Start game
+  act(() => {
+    result.current.handleCellClick(0, 0);
+  });
+  expect(result.current.gameStatus).toBe("playing");
+
+  // Act - Change to predefined difficulty
+  act(() => {
+    result.current.handleDifficultySelect("expert");
+  });
+
+  // Assert - Check difficulty changed and game reset
+  expect(result.current.difficulty).toBe("expert");
+  expect(result.current.minesRemaining).toBe(99); // Expert has 99 mines
+  expect(result.current.gameStatus).toBe("idle");
 });

@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
-
-import { BoardConfig, Difficulty, GameStatus } from "./core/types";
 import { useGameState } from "./hooks/useGameState/useGameState";
+import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts/useKeyboardShortcuts";
 
 import ControlPanel from "./components/ControlPanel/ControlPanel";
 import DifficultySelector from "./components/DifficultySelector/DifficultySelector";
@@ -11,68 +9,21 @@ import GameInstructions from "./components/GameInstructions/GameInstructions";
 import "./App.css";
 
 function App() {
-  const [difficulty, setDifficulty] = useState<Difficulty>("beginner");
-  const [customConfig, setCustomConfig] = useState<BoardConfig | undefined>(
-    undefined
-  );
-
   const {
     board,
     gameStatus,
     timeElapsed,
     minesRemaining,
+    statusMessage,
     handleCellClick,
     handleCellFlag,
     resetGame,
-  } = useGameState(difficulty, customConfig);
-
-  const [prevGameStatus, setPrevGameStatus] = useState<GameStatus>("idle");
-  const [statusMessage, setStatusMessage] = useState("");
-
-  // Handle difficulty selection including custom config
-  const handleDifficultySelect = (
-    newDifficulty: Difficulty,
-    config?: BoardConfig
-  ) => {
-    setDifficulty(newDifficulty);
-    setCustomConfig(config);
-  };
+    handleDifficultySelect,
+    difficulty,
+  } = useGameState();
 
   // Handle Restart with keyboard shortcut
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "r" || e.key === "R") {
-        resetGame();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [resetGame]);
-
-  // Update status message when game status changes
-  useEffect(() => {
-    if (gameStatus !== prevGameStatus) {
-      switch (gameStatus) {
-        case "playing":
-          if (prevGameStatus === "idle") {
-            setStatusMessage("Game started. Good luck!");
-          }
-          break;
-        case "won":
-          setStatusMessage(
-            `Congratulations! You won in ${timeElapsed} seconds!`
-          );
-          break;
-        case "lost":
-          setStatusMessage("Game over! You hit a mine.");
-          break;
-        default:
-          setStatusMessage("");
-      }
-      setPrevGameStatus(gameStatus);
-    }
-  }, [gameStatus, prevGameStatus, timeElapsed]);
+  useKeyboardShortcuts({ onRestart: resetGame });
 
   return (
     <div
