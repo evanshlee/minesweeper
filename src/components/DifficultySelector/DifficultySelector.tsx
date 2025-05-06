@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { BoardConfig, Difficulty, DifficultySettings } from "../../core/types";
+import { DifficultySettings } from "../../core/game";
+import { BoardConfig, Difficulty } from "../../core/types";
 import "./DifficultySelector.css";
 
 interface DifficultySelectorProps {

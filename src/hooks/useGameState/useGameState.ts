@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   checkWinCondition,
   DifficultySettings,
@@ -14,6 +14,8 @@ import {
   type Difficulty,
   type GameStatus,
 } from "../../core/types";
+import { useGameTimer } from "./useGameTimer";
+import { useStatusMessage } from "./useStatusMessage";
 
 export const useGameState = (
   initialDifficulty: Difficulty = "beginner",
@@ -34,73 +36,31 @@ export const useGameState = (
   );
   const [gameStatus, setGameStatus] = useState<GameStatus>("idle");
   const [prevGameStatus, setPrevGameStatus] = useState<GameStatus>("idle");
-  const [timeElapsed, setTimeElapsed] = useState(0);
   const [minesRemaining, setMinesRemaining] = useState(config.mines);
   const [isFirstClick, setIsFirstClick] = useState(true);
-  const [statusMessage, setStatusMessage] = useState("");
 
-  const timerRef = useRef<number | null>(null);
+  const { timeElapsed, resetTimer } = useGameTimer(gameStatus);
+  const { statusMessage, resetStatusMessage } = useStatusMessage(
+    gameStatus,
+    prevGameStatus,
+    timeElapsed
+  );
 
   useEffect(() => {
     if (gameStatus !== prevGameStatus) {
-      switch (gameStatus) {
-        case "playing":
-          if (prevGameStatus === "idle") {
-            setStatusMessage("Game started. Good luck!");
-          }
-          break;
-        case "won":
-          setStatusMessage(
-            `Congratulations! You won in ${timeElapsed} seconds!`
-          );
-          break;
-        case "lost":
-          setStatusMessage("Game over! You hit a mine.");
-          break;
-        default:
-          setStatusMessage("");
-      }
       setPrevGameStatus(gameStatus);
     }
-  }, [gameStatus, prevGameStatus, timeElapsed]);
+  }, [gameStatus, prevGameStatus]);
 
   // Reset game
   const resetGame = useCallback(() => {
     setBoard(initializeBoard(config));
     setGameStatus("idle");
-    setTimeElapsed(0);
+    resetTimer();
     setMinesRemaining(config.mines);
     setIsFirstClick(true);
-    setStatusMessage("");
-
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-  }, [config]);
-
-  // Start timer when game begins
-  useEffect(() => {
-    if (gameStatus === "playing" && !timerRef.current) {
-      timerRef.current = window.setInterval(() => {
-        setTimeElapsed((prev) => prev + 1);
-      }, 1000);
-    }
-
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-    };
-  }, [gameStatus]);
-
-  // Stop timer when game ends
-  useEffect(() => {
-    if ((gameStatus === "won" || gameStatus === "lost") && timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-  }, [gameStatus]);
+    resetStatusMessage();
+  }, [config, resetTimer, resetStatusMessage]);
 
   // Handle cell click
   const handleCellClick = useCallback(
