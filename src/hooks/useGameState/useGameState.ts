@@ -1,13 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  checkWinCondition,
-  DifficultySettings,
-  handleFirstClick,
-  initializeBoard,
-  revealCell,
-  revealMine,
-  toggleFlag,
-} from "../../core/game";
+import { GameEngine } from "../../core/GameEngine";
 import {
   type BoardConfig,
   type CellData,
@@ -19,23 +11,27 @@ export const useGameState = (
   initialDifficulty: Difficulty = "beginner",
   initialCustomConfig?: BoardConfig
 ) => {
+  const gameEngineRef = useRef<GameEngine>(
+    new GameEngine(initialDifficulty, initialCustomConfig)
+  );
+  const gameEngine = gameEngineRef.current;
+
   const [difficulty, setDifficulty] = useState<Difficulty>(initialDifficulty);
   const [customConfig, setCustomConfig] = useState<BoardConfig | undefined>(
     initialCustomConfig
   );
 
-  const config =
-    difficulty === "custom" && customConfig
-      ? customConfig
-      : DifficultySettings[difficulty as Exclude<Difficulty, "custom">];
-
-  const [board, setBoard] = useState<CellData[][]>(() =>
-    initializeBoard(config)
+  const [board, setBoard] = useState<CellData[][]>(() => gameEngine.getBoard());
+  const [gameStatus, setGameStatus] = useState<GameStatus>(
+    gameEngine.getStatus()
   );
-  const [gameStatus, setGameStatus] = useState<GameStatus>("idle");
-  const [prevGameStatus, setPrevGameStatus] = useState<GameStatus>("idle");
+  const [prevGameStatus, setPrevGameStatus] = useState<GameStatus>(
+    gameEngine.getStatus()
+  );
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const [minesRemaining, setMinesRemaining] = useState(config.mines);
+  const [minesRemaining, setMinesRemaining] = useState(
+    gameEngine.getMinesRemaining()
+  );
   const [isFirstClick, setIsFirstClick] = useState(true);
   const [statusMessage, setStatusMessage] = useState("");
 
@@ -43,33 +39,20 @@ export const useGameState = (
 
   useEffect(() => {
     if (gameStatus !== prevGameStatus) {
-      switch (gameStatus) {
-        case "playing":
-          if (prevGameStatus === "idle") {
-            setStatusMessage("Game started. Good luck!");
-          }
-          break;
-        case "won":
-          setStatusMessage(
-            `Congratulations! You won in ${timeElapsed} seconds!`
-          );
-          break;
-        case "lost":
-          setStatusMessage("Game over! You hit a mine.");
-          break;
-        default:
-          setStatusMessage("");
-      }
+      setStatusMessage(
+        gameEngine.getStatusMessage(gameStatus, prevGameStatus, timeElapsed)
+      );
       setPrevGameStatus(gameStatus);
     }
-  }, [gameStatus, prevGameStatus, timeElapsed]);
+  }, [gameStatus, prevGameStatus, timeElapsed, gameEngine]);
 
   // Reset game
   const resetGame = useCallback(() => {
-    setBoard(initializeBoard(config));
-    setGameStatus("idle");
+    gameEngine.resetGame();
+    setBoard(gameEngine.getBoard());
+    setGameStatus(gameEngine.getStatus());
     setTimeElapsed(0);
-    setMinesRemaining(config.mines);
+    setMinesRemaining(gameEngine.getMinesRemaining());
     setIsFirstClick(true);
     setStatusMessage("");
 
@@ -77,7 +60,7 @@ export const useGameState = (
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
-  }, [config]);
+  }, [gameEngine]);
 
   // Start timer when game begins
   useEffect(() => {
@@ -105,75 +88,35 @@ export const useGameState = (
   // Handle cell click
   const handleCellClick = useCallback(
     (x: number, y: number) => {
-      if (
-        gameStatus === "won" ||
-        gameStatus === "lost" ||
-        board[y][x].isFlagged
-      ) {
-        return;
-      }
-
-      if (isFirstClick) {
-        // First click is always safe
-        const newBoard = handleFirstClick(board, config, x, y);
-        setBoard(newBoard);
-        setIsFirstClick(false);
-        setGameStatus("playing");
-
-        // Check win condition
-        if (checkWinCondition(newBoard)) {
-          setGameStatus("won");
-        }
-        return;
-      }
-
-      // For subsequent clicks
-      if (board[y][x].isMine) {
-        // Game over
-        const newBoard = revealMine(board, x, y);
-        setBoard(newBoard);
-        setGameStatus("lost");
-        return;
-      }
-
-      // Reveal the clicked cell and potentially cascade
-      const newBoard = revealCell(board, x, y);
-      setBoard(newBoard);
-
-      // Check win condition
-      if (checkWinCondition(newBoard)) {
-        setGameStatus("won");
+      const result = gameEngine.handleCellClick(x, y);
+      if (result.boardChanged) {
+        setBoard(result.board);
+        setGameStatus(result.status);
+        if (isFirstClick) setIsFirstClick(false);
       }
     },
-    [board, config, gameStatus, isFirstClick]
+    [gameEngine, isFirstClick]
   );
 
   // Handle flag placement
   const handleCellFlag = useCallback(
     (x: number, y: number) => {
-      if (
-        gameStatus === "won" ||
-        gameStatus === "lost" ||
-        board[y][x].isRevealed
-      ) {
-        return;
+      const result = gameEngine.handleCellFlag(x, y);
+      if (result.boardChanged) {
+        setBoard(result.board);
+        setMinesRemaining(result.minesRemaining);
       }
-
-      const newBoard = toggleFlag(board, x, y);
-      setBoard(newBoard);
-      setMinesRemaining((prev) =>
-        newBoard[y][x].isFlagged ? prev - 1 : prev + 1
-      );
     },
-    [board, gameStatus]
+    [gameEngine]
   );
 
   const handleDifficultySelect = useCallback(
     (newDifficulty: Difficulty, newCustomConfig?: BoardConfig) => {
       setDifficulty(newDifficulty);
       setCustomConfig(newCustomConfig);
+      gameEngine.setDifficulty(newDifficulty, newCustomConfig);
     },
-    []
+    [gameEngine]
   );
 
   // Reset game when difficulty changes
