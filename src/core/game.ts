@@ -1,4 +1,4 @@
-import { BoardConfig, CellData } from "./types";
+import { BoardConfig, CellData, type Difficulty } from "./types";
 
 // Initialize an empty board
 export const initializeBoard = (config: BoardConfig): CellData[][] => {
@@ -168,4 +168,25 @@ export const handleFirstClick = (
   newBoard = revealCell(newBoard, x, y);
 
   return newBoard;
+};
+
+export const DifficultySettings: Record<
+  Exclude<Difficulty, "custom">,
+  BoardConfig
+> = {
+  beginner: {
+    rows: 9,
+    columns: 9,
+    mines: 10,
+  },
+  intermediate: {
+    rows: 16,
+    columns: 16,
+    mines: 40,
+  },
+  expert: {
+    rows: 16,
+    columns: 30,
+    mines: 99,
+  },
 };
