@@ -7,6 +7,19 @@ import {
   type GameStatus,
 } from "../../core/types";
 
+// 게임의 UI 상태를 하나의 인터페이스로 통합
+interface GameState {
+  board: CellData[][];
+  gameStatus: GameStatus;
+  prevGameStatus: GameStatus;
+  timeElapsed: number;
+  minesRemaining: number;
+  isFirstClick: boolean;
+  statusMessage: string;
+  difficulty: Difficulty;
+  customConfig?: BoardConfig;
+}
+
 export const useGameState = (
   initialDifficulty: Difficulty = "beginner",
   initialCustomConfig?: BoardConfig
@@ -16,57 +29,78 @@ export const useGameState = (
   );
   const gameEngine = gameEngineRef.current;
 
-  const [difficulty, setDifficulty] = useState<Difficulty>(initialDifficulty);
-  const [customConfig, setCustomConfig] = useState<BoardConfig | undefined>(
-    initialCustomConfig
-  );
-
-  const [board, setBoard] = useState<CellData[][]>(() => gameEngine.getBoard());
-  const [gameStatus, setGameStatus] = useState<GameStatus>(
-    gameEngine.getStatus()
-  );
-  const [prevGameStatus, setPrevGameStatus] = useState<GameStatus>(
-    gameEngine.getStatus()
-  );
-  const [timeElapsed, setTimeElapsed] = useState(0);
-  const [minesRemaining, setMinesRemaining] = useState(
-    gameEngine.getMinesRemaining()
-  );
-  const [isFirstClick, setIsFirstClick] = useState(true);
-  const [statusMessage, setStatusMessage] = useState("");
+  // 여러 개의 useState를 하나의 통합된 상태로 관리
+  const [gameState, setGameState] = useState<GameState>(() => ({
+    board: gameEngine.getBoard(),
+    gameStatus: gameEngine.getStatus(),
+    prevGameStatus: gameEngine.getStatus(),
+    timeElapsed: 0,
+    minesRemaining: gameEngine.getMinesRemaining(),
+    isFirstClick: true,
+    statusMessage: "",
+    difficulty: initialDifficulty,
+    customConfig: initialCustomConfig,
+  }));
 
   const timerRef = useRef<number | null>(null);
 
+  // 상태 메시지 업데이트 로직
   useEffect(() => {
-    if (gameStatus !== prevGameStatus) {
-      setStatusMessage(
-        gameEngine.getStatusMessage(gameStatus, prevGameStatus, timeElapsed)
+    if (gameState.gameStatus !== gameState.prevGameStatus) {
+      const newStatusMessage = gameEngine.getStatusMessage(
+        gameState.gameStatus,
+        gameState.prevGameStatus,
+        gameState.timeElapsed
       );
-      setPrevGameStatus(gameStatus);
-    }
-  }, [gameStatus, prevGameStatus, timeElapsed, gameEngine]);
 
-  // Reset game
+      setGameState((prev) => ({
+        ...prev,
+        statusMessage: newStatusMessage,
+        prevGameStatus: prev.gameStatus,
+      }));
+    }
+  }, [
+    gameState.gameStatus,
+    gameState.prevGameStatus,
+    gameEngine,
+    gameState.timeElapsed,
+  ]);
+
+  // 게임 리셋 함수 - 상태 업데이트 로직 통합
   const resetGame = useCallback(() => {
     gameEngine.resetGame();
-    setBoard(gameEngine.getBoard());
-    setGameStatus(gameEngine.getStatus());
-    setTimeElapsed(0);
-    setMinesRemaining(gameEngine.getMinesRemaining());
-    setIsFirstClick(true);
-    setStatusMessage("");
+
+    setGameState({
+      board: gameEngine.getBoard(),
+      gameStatus: gameEngine.getStatus(),
+      prevGameStatus: gameState.prevGameStatus,
+      timeElapsed: 0,
+      minesRemaining: gameEngine.getMinesRemaining(),
+      isFirstClick: true,
+      statusMessage: "",
+      difficulty: gameState.difficulty,
+      customConfig: gameState.customConfig,
+    });
 
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
-  }, [gameEngine]);
+  }, [
+    gameEngine,
+    gameState.difficulty,
+    gameState.customConfig,
+    gameState.prevGameStatus,
+  ]);
 
-  // Start timer when game begins
+  // 타이머 시작 로직
   useEffect(() => {
-    if (gameStatus === "playing" && !timerRef.current) {
+    if (gameState.gameStatus === "playing" && !timerRef.current) {
       timerRef.current = window.setInterval(() => {
-        setTimeElapsed((prev) => prev + 1);
+        setGameState((prev) => ({
+          ...prev,
+          timeElapsed: prev.timeElapsed + 1,
+        }));
       }, 1000);
     }
 
@@ -75,62 +109,77 @@ export const useGameState = (
         clearInterval(timerRef.current);
       }
     };
-  }, [gameStatus]);
+  }, [gameState.gameStatus]);
 
-  // Stop timer when game ends
+  // 게임 종료 시 타이머 중지
   useEffect(() => {
-    if ((gameStatus === "won" || gameStatus === "lost") && timerRef.current) {
+    if (
+      (gameState.gameStatus === "won" || gameState.gameStatus === "lost") &&
+      timerRef.current
+    ) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
-  }, [gameStatus]);
+  }, [gameState.gameStatus]);
 
-  // Handle cell click
+  // 셀 클릭 핸들러 - 상태 업데이트 통합
   const handleCellClick = useCallback(
     (x: number, y: number) => {
       const result = gameEngine.handleCellClick(x, y);
       if (result.boardChanged) {
-        setBoard(result.board);
-        setGameStatus(result.status);
-        if (isFirstClick) setIsFirstClick(false);
+        setGameState((prev) => ({
+          ...prev,
+          board: result.board,
+          gameStatus: result.status,
+          isFirstClick: prev.isFirstClick ? false : prev.isFirstClick,
+        }));
       }
     },
-    [gameEngine, isFirstClick]
+    [gameEngine]
   );
 
-  // Handle flag placement
+  // 깃발 설치 핸들러 - 상태 업데이트 통합
   const handleCellFlag = useCallback(
     (x: number, y: number) => {
       const result = gameEngine.handleCellFlag(x, y);
       if (result.boardChanged) {
-        setBoard(result.board);
-        setMinesRemaining(result.minesRemaining);
+        setGameState((prev) => ({
+          ...prev,
+          board: result.board,
+          minesRemaining: result.minesRemaining,
+        }));
       }
     },
     [gameEngine]
   );
 
+  // 난이도 선택 핸들러 - 상태 업데이트 통합
   const handleDifficultySelect = useCallback(
     (newDifficulty: Difficulty, newCustomConfig?: BoardConfig) => {
-      setDifficulty(newDifficulty);
-      setCustomConfig(newCustomConfig);
       gameEngine.setDifficulty(newDifficulty, newCustomConfig);
+
+      setGameState((prev) => ({
+        ...prev,
+        difficulty: newDifficulty,
+        customConfig: newCustomConfig,
+      }));
     },
     [gameEngine]
   );
 
-  // Reset game when difficulty changes
+  // 난이도 변경 시 게임 리셋
   useEffect(() => {
     resetGame();
-  }, [difficulty, customConfig, resetGame]);
+  }, [gameState.difficulty, gameState.customConfig, resetGame]);
 
+  // 필요한 값들만 외부로 노출
   return {
-    board,
-    gameStatus,
-    timeElapsed,
-    minesRemaining,
-    statusMessage,
-    difficulty,
+    board: gameState.board,
+    gameStatus: gameState.gameStatus,
+    timeElapsed: gameState.timeElapsed,
+    minesRemaining: gameState.minesRemaining,
+    statusMessage: gameState.statusMessage,
+    difficulty: gameState.difficulty,
     handleCellClick,
     handleCellFlag,
     resetGame,
