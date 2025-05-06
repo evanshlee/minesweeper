@@ -16,9 +16,14 @@ import {
 } from "../../core/types";
 
 export const useGameState = (
-  difficulty: Difficulty,
-  customConfig?: BoardConfig
+  initialDifficulty: Difficulty = "beginner",
+  initialCustomConfig?: BoardConfig
 ) => {
+  const [difficulty, setDifficulty] = useState<Difficulty>(initialDifficulty);
+  const [customConfig, setCustomConfig] = useState<BoardConfig | undefined>(
+    initialCustomConfig
+  );
+
   const config =
     difficulty === "custom" && customConfig
       ? customConfig
@@ -28,11 +33,36 @@ export const useGameState = (
     initializeBoard(config)
   );
   const [gameStatus, setGameStatus] = useState<GameStatus>("idle");
+  const [prevGameStatus, setPrevGameStatus] = useState<GameStatus>("idle");
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [minesRemaining, setMinesRemaining] = useState(config.mines);
   const [isFirstClick, setIsFirstClick] = useState(true);
+  const [statusMessage, setStatusMessage] = useState("");
 
   const timerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (gameStatus !== prevGameStatus) {
+      switch (gameStatus) {
+        case "playing":
+          if (prevGameStatus === "idle") {
+            setStatusMessage("Game started. Good luck!");
+          }
+          break;
+        case "won":
+          setStatusMessage(
+            `Congratulations! You won in ${timeElapsed} seconds!`
+          );
+          break;
+        case "lost":
+          setStatusMessage("Game over! You hit a mine.");
+          break;
+        default:
+          setStatusMessage("");
+      }
+      setPrevGameStatus(gameStatus);
+    }
+  }, [gameStatus, prevGameStatus, timeElapsed]);
 
   // Reset game
   const resetGame = useCallback(() => {
@@ -41,6 +71,7 @@ export const useGameState = (
     setTimeElapsed(0);
     setMinesRemaining(config.mines);
     setIsFirstClick(true);
+    setStatusMessage("");
 
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -137,18 +168,29 @@ export const useGameState = (
     [board, gameStatus]
   );
 
+  const handleDifficultySelect = useCallback(
+    (newDifficulty: Difficulty, newCustomConfig?: BoardConfig) => {
+      setDifficulty(newDifficulty);
+      setCustomConfig(newCustomConfig);
+    },
+    []
+  );
+
   // Reset game when difficulty changes
   useEffect(() => {
     resetGame();
-  }, [difficulty, resetGame]);
+  }, [difficulty, customConfig, resetGame]);
 
   return {
     board,
     gameStatus,
     timeElapsed,
     minesRemaining,
+    statusMessage,
+    difficulty,
     handleCellClick,
     handleCellFlag,
     resetGame,
+    handleDifficultySelect,
   };
 };
