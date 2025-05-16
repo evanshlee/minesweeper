@@ -1,0 +1,1122 @@
+import { expect, test } from "@playwright/test";
+
+test("snapshots by difficulty option", async ({ page }) => {
+  await page.goto("http://localhost:5173/");
+  await expect(page.locator("body")).toMatchAriaSnapshot(`
+    - application "Minesweeper Game":
+      - heading "Minesweeper" [level=1]
+      - button "Show help": ❓ How to Play
+      - status
+      - region "Difficulty":
+        - heading "Difficulty" [level=2]
+        - radiogroup "Difficulty":
+          - radio "Beginner" [checked]
+          - radio "Intermediate"
+          - text: Intermediate
+          - radio "Expert"
+          - radio "Custom"
+        - paragraph: "Board: 9×9"
+        - paragraph: "/Mines: \\\\d+/"
+      - group "Game controls":
+        - 'status /Mines remaining: \\d+/'
+        - button "Click to start a new game."
+        - 'timer "Time elapsed: 0 seconds"'
+      - grid "Minesweeper game board, 9 rows by 9 columns":
+        - row "Cell at row 1, column 1, unrevealed Cell at row 1, column 2, unrevealed Cell at row 1, column 3, unrevealed Cell at row 1, column 4, unrevealed Cell at row 1, column 5, unrevealed Cell at row 1, column 6, unrevealed Cell at row 1, column 7, unrevealed Cell at row 1, column 8, unrevealed Cell at row 1, column 9, unrevealed":
+          - gridcell "Cell at row 1, column 1, unrevealed"
+          - gridcell "Cell at row 1, column 2, unrevealed"
+          - gridcell "Cell at row 1, column 3, unrevealed"
+          - gridcell "Cell at row 1, column 4, unrevealed"
+          - gridcell "Cell at row 1, column 5, unrevealed"
+          - gridcell "Cell at row 1, column 6, unrevealed"
+          - gridcell "Cell at row 1, column 7, unrevealed"
+          - gridcell "Cell at row 1, column 8, unrevealed"
+          - gridcell "Cell at row 1, column 9, unrevealed"
+        - row "Cell at row 2, column 1, unrevealed Cell at row 2, column 2, unrevealed Cell at row 2, column 3, unrevealed Cell at row 2, column 4, unrevealed Cell at row 2, column 5, unrevealed Cell at row 2, column 6, unrevealed Cell at row 2, column 7, unrevealed Cell at row 2, column 8, unrevealed Cell at row 2, column 9, unrevealed":
+          - gridcell "Cell at row 2, column 1, unrevealed"
+          - gridcell "Cell at row 2, column 2, unrevealed"
+          - gridcell "Cell at row 2, column 3, unrevealed"
+          - gridcell "Cell at row 2, column 4, unrevealed"
+          - gridcell "Cell at row 2, column 5, unrevealed"
+          - gridcell "Cell at row 2, column 6, unrevealed"
+          - gridcell "Cell at row 2, column 7, unrevealed"
+          - gridcell "Cell at row 2, column 8, unrevealed"
+          - gridcell "Cell at row 2, column 9, unrevealed"
+        - row "Cell at row 3, column 1, unrevealed Cell at row 3, column 2, unrevealed Cell at row 3, column 3, unrevealed Cell at row 3, column 4, unrevealed Cell at row 3, column 5, unrevealed Cell at row 3, column 6, unrevealed Cell at row 3, column 7, unrevealed Cell at row 3, column 8, unrevealed Cell at row 3, column 9, unrevealed":
+          - gridcell "Cell at row 3, column 1, unrevealed"
+          - gridcell "Cell at row 3, column 2, unrevealed"
+          - gridcell "Cell at row 3, column 3, unrevealed"
+          - gridcell "Cell at row 3, column 4, unrevealed"
+          - gridcell "Cell at row 3, column 5, unrevealed"
+          - gridcell "Cell at row 3, column 6, unrevealed"
+          - gridcell "Cell at row 3, column 7, unrevealed"
+          - gridcell "Cell at row 3, column 8, unrevealed"
+          - gridcell "Cell at row 3, column 9, unrevealed"
+        - row "Cell at row 4, column 1, unrevealed Cell at row 4, column 2, unrevealed Cell at row 4, column 3, unrevealed Cell at row 4, column 4, unrevealed Cell at row 4, column 5, unrevealed Cell at row 4, column 6, unrevealed Cell at row 4, column 7, unrevealed Cell at row 4, column 8, unrevealed Cell at row 4, column 9, unrevealed":
+          - gridcell "Cell at row 4, column 1, unrevealed"
+          - gridcell "Cell at row 4, column 2, unrevealed"
+          - gridcell "Cell at row 4, column 3, unrevealed"
+          - gridcell "Cell at row 4, column 4, unrevealed"
+          - gridcell "Cell at row 4, column 5, unrevealed"
+          - gridcell "Cell at row 4, column 6, unrevealed"
+          - gridcell "Cell at row 4, column 7, unrevealed"
+          - gridcell "Cell at row 4, column 8, unrevealed"
+          - gridcell "Cell at row 4, column 9, unrevealed"
+        - row "Cell at row 5, column 1, unrevealed Cell at row 5, column 2, unrevealed Cell at row 5, column 3, unrevealed Cell at row 5, column 4, unrevealed Cell at row 5, column 5, unrevealed Cell at row 5, column 6, unrevealed Cell at row 5, column 7, unrevealed Cell at row 5, column 8, unrevealed Cell at row 5, column 9, unrevealed":
+          - gridcell "Cell at row 5, column 1, unrevealed"
+          - gridcell "Cell at row 5, column 2, unrevealed"
+          - gridcell "Cell at row 5, column 3, unrevealed"
+          - gridcell "Cell at row 5, column 4, unrevealed"
+          - gridcell "Cell at row 5, column 5, unrevealed"
+          - gridcell "Cell at row 5, column 6, unrevealed"
+          - gridcell "Cell at row 5, column 7, unrevealed"
+          - gridcell "Cell at row 5, column 8, unrevealed"
+          - gridcell "Cell at row 5, column 9, unrevealed"
+        - row "Cell at row 6, column 1, unrevealed Cell at row 6, column 2, unrevealed Cell at row 6, column 3, unrevealed Cell at row 6, column 4, unrevealed Cell at row 6, column 5, unrevealed Cell at row 6, column 6, unrevealed Cell at row 6, column 7, unrevealed Cell at row 6, column 8, unrevealed Cell at row 6, column 9, unrevealed":
+          - gridcell "Cell at row 6, column 1, unrevealed"
+          - gridcell "Cell at row 6, column 2, unrevealed"
+          - gridcell "Cell at row 6, column 3, unrevealed"
+          - gridcell "Cell at row 6, column 4, unrevealed"
+          - gridcell "Cell at row 6, column 5, unrevealed"
+          - gridcell "Cell at row 6, column 6, unrevealed"
+          - gridcell "Cell at row 6, column 7, unrevealed"
+          - gridcell "Cell at row 6, column 8, unrevealed"
+          - gridcell "Cell at row 6, column 9, unrevealed"
+        - row "Cell at row 7, column 1, unrevealed Cell at row 7, column 2, unrevealed Cell at row 7, column 3, unrevealed Cell at row 7, column 4, unrevealed Cell at row 7, column 5, unrevealed Cell at row 7, column 6, unrevealed Cell at row 7, column 7, unrevealed Cell at row 7, column 8, unrevealed Cell at row 7, column 9, unrevealed":
+          - gridcell "Cell at row 7, column 1, unrevealed"
+          - gridcell "Cell at row 7, column 2, unrevealed"
+          - gridcell "Cell at row 7, column 3, unrevealed"
+          - gridcell "Cell at row 7, column 4, unrevealed"
+          - gridcell "Cell at row 7, column 5, unrevealed"
+          - gridcell "Cell at row 7, column 6, unrevealed"
+          - gridcell "Cell at row 7, column 7, unrevealed"
+          - gridcell "Cell at row 7, column 8, unrevealed"
+          - gridcell "Cell at row 7, column 9, unrevealed"
+        - row "Cell at row 8, column 1, unrevealed Cell at row 8, column 2, unrevealed Cell at row 8, column 3, unrevealed Cell at row 8, column 4, unrevealed Cell at row 8, column 5, unrevealed Cell at row 8, column 6, unrevealed Cell at row 8, column 7, unrevealed Cell at row 8, column 8, unrevealed Cell at row 8, column 9, unrevealed":
+          - gridcell "Cell at row 8, column 1, unrevealed"
+          - gridcell "Cell at row 8, column 2, unrevealed"
+          - gridcell "Cell at row 8, column 3, unrevealed"
+          - gridcell "Cell at row 8, column 4, unrevealed"
+          - gridcell "Cell at row 8, column 5, unrevealed"
+          - gridcell "Cell at row 8, column 6, unrevealed"
+          - gridcell "Cell at row 8, column 7, unrevealed"
+          - gridcell "Cell at row 8, column 8, unrevealed"
+          - gridcell "Cell at row 8, column 9, unrevealed"
+        - row "Cell at row 9, column 1, unrevealed Cell at row 9, column 2, unrevealed Cell at row 9, column 3, unrevealed Cell at row 9, column 4, unrevealed Cell at row 9, column 5, unrevealed Cell at row 9, column 6, unrevealed Cell at row 9, column 7, unrevealed Cell at row 9, column 8, unrevealed Cell at row 9, column 9, unrevealed":
+          - gridcell "Cell at row 9, column 1, unrevealed"
+          - gridcell "Cell at row 9, column 2, unrevealed"
+          - gridcell "Cell at row 9, column 3, unrevealed"
+          - gridcell "Cell at row 9, column 4, unrevealed"
+          - gridcell "Cell at row 9, column 5, unrevealed"
+          - gridcell "Cell at row 9, column 6, unrevealed"
+          - gridcell "Cell at row 9, column 7, unrevealed"
+          - gridcell "Cell at row 9, column 8, unrevealed"
+          - gridcell "Cell at row 9, column 9, unrevealed"
+      - text: You can navigate the game board using the keyboard. Use arrow keys to move between cells, press Enter or Space to reveal a cell, and press F to place or remove a flag. Press R to restart the game.
+    `);
+  await page.getByText("Intermediate").click();
+  await expect(page.locator("body")).toMatchAriaSnapshot(`
+    - application "Minesweeper Game":
+      - heading "Minesweeper" [level=1]
+      - button "Show help": ❓ How to Play
+      - status
+      - region "Difficulty":
+        - heading "Difficulty" [level=2]
+        - radiogroup "Difficulty":
+          - radio "Beginner"
+          - radio "Intermediate" [checked]
+          - text: Intermediate
+          - radio "Expert"
+          - radio "Custom"
+        - paragraph: "/Board: \\\\d+×\\\\d+/"
+        - paragraph: "/Mines: \\\\d+/"
+      - group "Game controls":
+        - 'status /Mines remaining: \\d+/'
+        - button "Click to start a new game."
+        - 'timer "Time elapsed: 0 seconds"'
+      - grid /Minesweeper game board, \\d+ rows by \\d+ columns/:
+        - row /Cell at row 1, column 1, unrevealed Cell at row 1, column 2, unrevealed Cell at row 1, column 3, unrevealed Cell at row 1, column 4, unrevealed Cell at row 1, column 5, unrevealed Cell at row 1, column 6, unrevealed Cell at row 1, column 7, unrevealed Cell at row 1, column 8, unrevealed Cell at row 1, column 9, unrevealed Cell at row 1, column \\d+, unrevealed Cell at row 1, column \\d+, unrevealed Cell at row 1, column \\d+, unrevealed Cell at row 1, column \\d+, unrevealed Cell at row 1, column \\d+, unrevealed Cell at row 1, column \\d+, unrevealed Cell at row 1, column \\d+, unrevealed/:
+          - gridcell "Cell at row 1, column 1, unrevealed"
+          - gridcell "Cell at row 1, column 2, unrevealed"
+          - gridcell "Cell at row 1, column 3, unrevealed"
+          - gridcell "Cell at row 1, column 4, unrevealed"
+          - gridcell "Cell at row 1, column 5, unrevealed"
+          - gridcell "Cell at row 1, column 6, unrevealed"
+          - gridcell "Cell at row 1, column 7, unrevealed"
+          - gridcell "Cell at row 1, column 8, unrevealed"
+          - gridcell "Cell at row 1, column 9, unrevealed"
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+        - row /Cell at row 2, column 1, unrevealed Cell at row 2, column 2, unrevealed Cell at row 2, column 3, unrevealed Cell at row 2, column 4, unrevealed Cell at row 2, column 5, unrevealed Cell at row 2, column 6, unrevealed Cell at row 2, column 7, unrevealed Cell at row 2, column 8, unrevealed Cell at row 2, column 9, unrevealed Cell at row 2, column \\d+, unrevealed Cell at row 2, column \\d+, unrevealed Cell at row 2, column \\d+, unrevealed Cell at row 2, column \\d+, unrevealed Cell at row 2, column \\d+, unrevealed Cell at row 2, column \\d+, unrevealed Cell at row 2, column \\d+, unrevealed/:
+          - gridcell "Cell at row 2, column 1, unrevealed"
+          - gridcell "Cell at row 2, column 2, unrevealed"
+          - gridcell "Cell at row 2, column 3, unrevealed"
+          - gridcell "Cell at row 2, column 4, unrevealed"
+          - gridcell "Cell at row 2, column 5, unrevealed"
+          - gridcell "Cell at row 2, column 6, unrevealed"
+          - gridcell "Cell at row 2, column 7, unrevealed"
+          - gridcell "Cell at row 2, column 8, unrevealed"
+          - gridcell "Cell at row 2, column 9, unrevealed"
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+        - row /Cell at row 3, column 1, unrevealed Cell at row 3, column 2, unrevealed Cell at row 3, column 3, unrevealed Cell at row 3, column 4, unrevealed Cell at row 3, column 5, unrevealed Cell at row 3, column 6, unrevealed Cell at row 3, column 7, unrevealed Cell at row 3, column 8, unrevealed Cell at row 3, column 9, unrevealed Cell at row 3, column \\d+, unrevealed Cell at row 3, column \\d+, unrevealed Cell at row 3, column \\d+, unrevealed Cell at row 3, column \\d+, unrevealed Cell at row 3, column \\d+, unrevealed Cell at row 3, column \\d+, unrevealed Cell at row 3, column \\d+, unrevealed/:
+          - gridcell "Cell at row 3, column 1, unrevealed"
+          - gridcell "Cell at row 3, column 2, unrevealed"
+          - gridcell "Cell at row 3, column 3, unrevealed"
+          - gridcell "Cell at row 3, column 4, unrevealed"
+          - gridcell "Cell at row 3, column 5, unrevealed"
+          - gridcell "Cell at row 3, column 6, unrevealed"
+          - gridcell "Cell at row 3, column 7, unrevealed"
+          - gridcell "Cell at row 3, column 8, unrevealed"
+          - gridcell "Cell at row 3, column 9, unrevealed"
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+        - row /Cell at row 4, column 1, unrevealed Cell at row 4, column 2, unrevealed Cell at row 4, column 3, unrevealed Cell at row 4, column 4, unrevealed Cell at row 4, column 5, unrevealed Cell at row 4, column 6, unrevealed Cell at row 4, column 7, unrevealed Cell at row 4, column 8, unrevealed Cell at row 4, column 9, unrevealed Cell at row 4, column \\d+, unrevealed Cell at row 4, column \\d+, unrevealed Cell at row 4, column \\d+, unrevealed Cell at row 4, column \\d+, unrevealed Cell at row 4, column \\d+, unrevealed Cell at row 4, column \\d+, unrevealed Cell at row 4, column \\d+, unrevealed/:
+          - gridcell "Cell at row 4, column 1, unrevealed"
+          - gridcell "Cell at row 4, column 2, unrevealed"
+          - gridcell "Cell at row 4, column 3, unrevealed"
+          - gridcell "Cell at row 4, column 4, unrevealed"
+          - gridcell "Cell at row 4, column 5, unrevealed"
+          - gridcell "Cell at row 4, column 6, unrevealed"
+          - gridcell "Cell at row 4, column 7, unrevealed"
+          - gridcell "Cell at row 4, column 8, unrevealed"
+          - gridcell "Cell at row 4, column 9, unrevealed"
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+        - row /Cell at row 5, column 1, unrevealed Cell at row 5, column 2, unrevealed Cell at row 5, column 3, unrevealed Cell at row 5, column 4, unrevealed Cell at row 5, column 5, unrevealed Cell at row 5, column 6, unrevealed Cell at row 5, column 7, unrevealed Cell at row 5, column 8, unrevealed Cell at row 5, column 9, unrevealed Cell at row 5, column \\d+, unrevealed Cell at row 5, column \\d+, unrevealed Cell at row 5, column \\d+, unrevealed Cell at row 5, column \\d+, unrevealed Cell at row 5, column \\d+, unrevealed Cell at row 5, column \\d+, unrevealed Cell at row 5, column \\d+, unrevealed/:
+          - gridcell "Cell at row 5, column 1, unrevealed"
+          - gridcell "Cell at row 5, column 2, unrevealed"
+          - gridcell "Cell at row 5, column 3, unrevealed"
+          - gridcell "Cell at row 5, column 4, unrevealed"
+          - gridcell "Cell at row 5, column 5, unrevealed"
+          - gridcell "Cell at row 5, column 6, unrevealed"
+          - gridcell "Cell at row 5, column 7, unrevealed"
+          - gridcell "Cell at row 5, column 8, unrevealed"
+          - gridcell "Cell at row 5, column 9, unrevealed"
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+        - row /Cell at row 6, column 1, unrevealed Cell at row 6, column 2, unrevealed Cell at row 6, column 3, unrevealed Cell at row 6, column 4, unrevealed Cell at row 6, column 5, unrevealed Cell at row 6, column 6, unrevealed Cell at row 6, column 7, unrevealed Cell at row 6, column 8, unrevealed Cell at row 6, column 9, unrevealed Cell at row 6, column \\d+, unrevealed Cell at row 6, column \\d+, unrevealed Cell at row 6, column \\d+, unrevealed Cell at row 6, column \\d+, unrevealed Cell at row 6, column \\d+, unrevealed Cell at row 6, column \\d+, unrevealed Cell at row 6, column \\d+, unrevealed/:
+          - gridcell "Cell at row 6, column 1, unrevealed"
+          - gridcell "Cell at row 6, column 2, unrevealed"
+          - gridcell "Cell at row 6, column 3, unrevealed"
+          - gridcell "Cell at row 6, column 4, unrevealed"
+          - gridcell "Cell at row 6, column 5, unrevealed"
+          - gridcell "Cell at row 6, column 6, unrevealed"
+          - gridcell "Cell at row 6, column 7, unrevealed"
+          - gridcell "Cell at row 6, column 8, unrevealed"
+          - gridcell "Cell at row 6, column 9, unrevealed"
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+        - row /Cell at row 7, column 1, unrevealed Cell at row 7, column 2, unrevealed Cell at row 7, column 3, unrevealed Cell at row 7, column 4, unrevealed Cell at row 7, column 5, unrevealed Cell at row 7, column 6, unrevealed Cell at row 7, column 7, unrevealed Cell at row 7, column 8, unrevealed Cell at row 7, column 9, unrevealed Cell at row 7, column \\d+, unrevealed Cell at row 7, column \\d+, unrevealed Cell at row 7, column \\d+, unrevealed Cell at row 7, column \\d+, unrevealed Cell at row 7, column \\d+, unrevealed Cell at row 7, column \\d+, unrevealed Cell at row 7, column \\d+, unrevealed/:
+          - gridcell "Cell at row 7, column 1, unrevealed"
+          - gridcell "Cell at row 7, column 2, unrevealed"
+          - gridcell "Cell at row 7, column 3, unrevealed"
+          - gridcell "Cell at row 7, column 4, unrevealed"
+          - gridcell "Cell at row 7, column 5, unrevealed"
+          - gridcell "Cell at row 7, column 6, unrevealed"
+          - gridcell "Cell at row 7, column 7, unrevealed"
+          - gridcell "Cell at row 7, column 8, unrevealed"
+          - gridcell "Cell at row 7, column 9, unrevealed"
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+        - row /Cell at row 8, column 1, unrevealed Cell at row 8, column 2, unrevealed Cell at row 8, column 3, unrevealed Cell at row 8, column 4, unrevealed Cell at row 8, column 5, unrevealed Cell at row 8, column 6, unrevealed Cell at row 8, column 7, unrevealed Cell at row 8, column 8, unrevealed Cell at row 8, column 9, unrevealed Cell at row 8, column \\d+, unrevealed Cell at row 8, column \\d+, unrevealed Cell at row 8, column \\d+, unrevealed Cell at row 8, column \\d+, unrevealed Cell at row 8, column \\d+, unrevealed Cell at row 8, column \\d+, unrevealed Cell at row 8, column \\d+, unrevealed/:
+          - gridcell "Cell at row 8, column 1, unrevealed"
+          - gridcell "Cell at row 8, column 2, unrevealed"
+          - gridcell "Cell at row 8, column 3, unrevealed"
+          - gridcell "Cell at row 8, column 4, unrevealed"
+          - gridcell "Cell at row 8, column 5, unrevealed"
+          - gridcell "Cell at row 8, column 6, unrevealed"
+          - gridcell "Cell at row 8, column 7, unrevealed"
+          - gridcell "Cell at row 8, column 8, unrevealed"
+          - gridcell "Cell at row 8, column 9, unrevealed"
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+        - row /Cell at row 9, column 1, unrevealed Cell at row 9, column 2, unrevealed Cell at row 9, column 3, unrevealed Cell at row 9, column 4, unrevealed Cell at row 9, column 5, unrevealed Cell at row 9, column 6, unrevealed Cell at row 9, column 7, unrevealed Cell at row 9, column 8, unrevealed Cell at row 9, column 9, unrevealed Cell at row 9, column \\d+, unrevealed Cell at row 9, column \\d+, unrevealed Cell at row 9, column \\d+, unrevealed Cell at row 9, column \\d+, unrevealed Cell at row 9, column \\d+, unrevealed Cell at row 9, column \\d+, unrevealed Cell at row 9, column \\d+, unrevealed/:
+          - gridcell "Cell at row 9, column 1, unrevealed"
+          - gridcell "Cell at row 9, column 2, unrevealed"
+          - gridcell "Cell at row 9, column 3, unrevealed"
+          - gridcell "Cell at row 9, column 4, unrevealed"
+          - gridcell "Cell at row 9, column 5, unrevealed"
+          - gridcell "Cell at row 9, column 6, unrevealed"
+          - gridcell "Cell at row 9, column 7, unrevealed"
+          - gridcell "Cell at row 9, column 8, unrevealed"
+          - gridcell "Cell at row 9, column 9, unrevealed"
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+        - row /Cell at row \\d+, column 1, unrevealed Cell at row \\d+, column 2, unrevealed Cell at row \\d+, column 3, unrevealed Cell at row \\d+, column 4, unrevealed Cell at row \\d+, column 5, unrevealed Cell at row \\d+, column 6, unrevealed Cell at row \\d+, column 7, unrevealed Cell at row \\d+, column 8, unrevealed Cell at row \\d+, column 9, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed/:
+          - gridcell /Cell at row \\d+, column 1, unrevealed/
+          - gridcell /Cell at row \\d+, column 2, unrevealed/
+          - gridcell /Cell at row \\d+, column 3, unrevealed/
+          - gridcell /Cell at row \\d+, column 4, unrevealed/
+          - gridcell /Cell at row \\d+, column 5, unrevealed/
+          - gridcell /Cell at row \\d+, column 6, unrevealed/
+          - gridcell /Cell at row \\d+, column 7, unrevealed/
+          - gridcell /Cell at row \\d+, column 8, unrevealed/
+          - gridcell /Cell at row \\d+, column 9, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+        - row /Cell at row \\d+, column 1, unrevealed Cell at row \\d+, column 2, unrevealed Cell at row \\d+, column 3, unrevealed Cell at row \\d+, column 4, unrevealed Cell at row \\d+, column 5, unrevealed Cell at row \\d+, column 6, unrevealed Cell at row \\d+, column 7, unrevealed Cell at row \\d+, column 8, unrevealed Cell at row \\d+, column 9, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed/:
+          - gridcell /Cell at row \\d+, column 1, unrevealed/
+          - gridcell /Cell at row \\d+, column 2, unrevealed/
+          - gridcell /Cell at row \\d+, column 3, unrevealed/
+          - gridcell /Cell at row \\d+, column 4, unrevealed/
+          - gridcell /Cell at row \\d+, column 5, unrevealed/
+          - gridcell /Cell at row \\d+, column 6, unrevealed/
+          - gridcell /Cell at row \\d+, column 7, unrevealed/
+          - gridcell /Cell at row \\d+, column 8, unrevealed/
+          - gridcell /Cell at row \\d+, column 9, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+        - row /Cell at row \\d+, column 1, unrevealed Cell at row \\d+, column 2, unrevealed Cell at row \\d+, column 3, unrevealed Cell at row \\d+, column 4, unrevealed Cell at row \\d+, column 5, unrevealed Cell at row \\d+, column 6, unrevealed Cell at row \\d+, column 7, unrevealed Cell at row \\d+, column 8, unrevealed Cell at row \\d+, column 9, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed/:
+          - gridcell /Cell at row \\d+, column 1, unrevealed/
+          - gridcell /Cell at row \\d+, column 2, unrevealed/
+          - gridcell /Cell at row \\d+, column 3, unrevealed/
+          - gridcell /Cell at row \\d+, column 4, unrevealed/
+          - gridcell /Cell at row \\d+, column 5, unrevealed/
+          - gridcell /Cell at row \\d+, column 6, unrevealed/
+          - gridcell /Cell at row \\d+, column 7, unrevealed/
+          - gridcell /Cell at row \\d+, column 8, unrevealed/
+          - gridcell /Cell at row \\d+, column 9, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+        - row /Cell at row \\d+, column 1, unrevealed Cell at row \\d+, column 2, unrevealed Cell at row \\d+, column 3, unrevealed Cell at row \\d+, column 4, unrevealed Cell at row \\d+, column 5, unrevealed Cell at row \\d+, column 6, unrevealed Cell at row \\d+, column 7, unrevealed Cell at row \\d+, column 8, unrevealed Cell at row \\d+, column 9, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed/:
+          - gridcell /Cell at row \\d+, column 1, unrevealed/
+          - gridcell /Cell at row \\d+, column 2, unrevealed/
+          - gridcell /Cell at row \\d+, column 3, unrevealed/
+          - gridcell /Cell at row \\d+, column 4, unrevealed/
+          - gridcell /Cell at row \\d+, column 5, unrevealed/
+          - gridcell /Cell at row \\d+, column 6, unrevealed/
+          - gridcell /Cell at row \\d+, column 7, unrevealed/
+          - gridcell /Cell at row \\d+, column 8, unrevealed/
+          - gridcell /Cell at row \\d+, column 9, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+        - row /Cell at row \\d+, column 1, unrevealed Cell at row \\d+, column 2, unrevealed Cell at row \\d+, column 3, unrevealed Cell at row \\d+, column 4, unrevealed Cell at row \\d+, column 5, unrevealed Cell at row \\d+, column 6, unrevealed Cell at row \\d+, column 7, unrevealed Cell at row \\d+, column 8, unrevealed Cell at row \\d+, column 9, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed/:
+          - gridcell /Cell at row \\d+, column 1, unrevealed/
+          - gridcell /Cell at row \\d+, column 2, unrevealed/
+          - gridcell /Cell at row \\d+, column 3, unrevealed/
+          - gridcell /Cell at row \\d+, column 4, unrevealed/
+          - gridcell /Cell at row \\d+, column 5, unrevealed/
+          - gridcell /Cell at row \\d+, column 6, unrevealed/
+          - gridcell /Cell at row \\d+, column 7, unrevealed/
+          - gridcell /Cell at row \\d+, column 8, unrevealed/
+          - gridcell /Cell at row \\d+, column 9, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+        - row /Cell at row \\d+, column 1, unrevealed Cell at row \\d+, column 2, unrevealed Cell at row \\d+, column 3, unrevealed Cell at row \\d+, column 4, unrevealed Cell at row \\d+, column 5, unrevealed Cell at row \\d+, column 6, unrevealed Cell at row \\d+, column 7, unrevealed Cell at row \\d+, column 8, unrevealed Cell at row \\d+, column 9, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed/:
+          - gridcell /Cell at row \\d+, column 1, unrevealed/
+          - gridcell /Cell at row \\d+, column 2, unrevealed/
+          - gridcell /Cell at row \\d+, column 3, unrevealed/
+          - gridcell /Cell at row \\d+, column 4, unrevealed/
+          - gridcell /Cell at row \\d+, column 5, unrevealed/
+          - gridcell /Cell at row \\d+, column 6, unrevealed/
+          - gridcell /Cell at row \\d+, column 7, unrevealed/
+          - gridcell /Cell at row \\d+, column 8, unrevealed/
+          - gridcell /Cell at row \\d+, column 9, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+        - row /Cell at row \\d+, column 1, unrevealed Cell at row \\d+, column 2, unrevealed Cell at row \\d+, column 3, unrevealed Cell at row \\d+, column 4, unrevealed Cell at row \\d+, column 5, unrevealed Cell at row \\d+, column 6, unrevealed Cell at row \\d+, column 7, unrevealed Cell at row \\d+, column 8, unrevealed Cell at row \\d+, column 9, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed Cell at row \\d+, column \\d+, unrevealed/:
+          - gridcell /Cell at row \\d+, column 1, unrevealed/
+          - gridcell /Cell at row \\d+, column 2, unrevealed/
+          - gridcell /Cell at row \\d+, column 3, unrevealed/
+          - gridcell /Cell at row \\d+, column 4, unrevealed/
+          - gridcell /Cell at row \\d+, column 5, unrevealed/
+          - gridcell /Cell at row \\d+, column 6, unrevealed/
+          - gridcell /Cell at row \\d+, column 7, unrevealed/
+          - gridcell /Cell at row \\d+, column 8, unrevealed/
+          - gridcell /Cell at row \\d+, column 9, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+      - text: You can navigate the game board using the keyboard. Use arrow keys to move between cells, press Enter or Space to reveal a cell, and press F to place or remove a flag. Press R to restart the game.
+    `);
+  await page.getByRole("radio", { name: "Expert" }).check();
+  await expect(page.locator("body")).toMatchAriaSnapshot(`
+    - application "Minesweeper Game":
+      - heading "Minesweeper" [level=1]
+      - button "Show help": ❓ How to Play
+      - status
+      - region "Difficulty":
+        - heading "Difficulty" [level=2]
+        - radiogroup "Difficulty":
+          - radio "Beginner"
+          - radio "Intermediate"
+          - text: Intermediate
+          - radio "Expert" [checked]
+          - radio "Custom"
+        - paragraph: "/Board: \\\\d+×\\\\d+/"
+        - paragraph: "/Mines: \\\\d+/"
+      - group "Game controls":
+        - 'status /Mines remaining: \\d+/'
+        - button "Click to start a new game."
+        - 'timer "Time elapsed: 0 seconds"'
+      - grid /Minesweeper game board, \\d+ rows by \\d+ columns/:
+        - row:
+          - gridcell "Cell at row 1, column 1, unrevealed"
+          - gridcell "Cell at row 1, column 2, unrevealed"
+          - gridcell "Cell at row 1, column 3, unrevealed"
+          - gridcell "Cell at row 1, column 4, unrevealed"
+          - gridcell "Cell at row 1, column 5, unrevealed"
+          - gridcell "Cell at row 1, column 6, unrevealed"
+          - gridcell "Cell at row 1, column 7, unrevealed"
+          - gridcell "Cell at row 1, column 8, unrevealed"
+          - gridcell "Cell at row 1, column 9, unrevealed"
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+        - row:
+          - gridcell "Cell at row 2, column 1, unrevealed"
+          - gridcell "Cell at row 2, column 2, unrevealed"
+          - gridcell "Cell at row 2, column 3, unrevealed"
+          - gridcell "Cell at row 2, column 4, unrevealed"
+          - gridcell "Cell at row 2, column 5, unrevealed"
+          - gridcell "Cell at row 2, column 6, unrevealed"
+          - gridcell "Cell at row 2, column 7, unrevealed"
+          - gridcell "Cell at row 2, column 8, unrevealed"
+          - gridcell "Cell at row 2, column 9, unrevealed"
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+        - row:
+          - gridcell "Cell at row 3, column 1, unrevealed"
+          - gridcell "Cell at row 3, column 2, unrevealed"
+          - gridcell "Cell at row 3, column 3, unrevealed"
+          - gridcell "Cell at row 3, column 4, unrevealed"
+          - gridcell "Cell at row 3, column 5, unrevealed"
+          - gridcell "Cell at row 3, column 6, unrevealed"
+          - gridcell "Cell at row 3, column 7, unrevealed"
+          - gridcell "Cell at row 3, column 8, unrevealed"
+          - gridcell "Cell at row 3, column 9, unrevealed"
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+        - row:
+          - gridcell "Cell at row 4, column 1, unrevealed"
+          - gridcell "Cell at row 4, column 2, unrevealed"
+          - gridcell "Cell at row 4, column 3, unrevealed"
+          - gridcell "Cell at row 4, column 4, unrevealed"
+          - gridcell "Cell at row 4, column 5, unrevealed"
+          - gridcell "Cell at row 4, column 6, unrevealed"
+          - gridcell "Cell at row 4, column 7, unrevealed"
+          - gridcell "Cell at row 4, column 8, unrevealed"
+          - gridcell "Cell at row 4, column 9, unrevealed"
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+        - row:
+          - gridcell "Cell at row 5, column 1, unrevealed"
+          - gridcell "Cell at row 5, column 2, unrevealed"
+          - gridcell "Cell at row 5, column 3, unrevealed"
+          - gridcell "Cell at row 5, column 4, unrevealed"
+          - gridcell "Cell at row 5, column 5, unrevealed"
+          - gridcell "Cell at row 5, column 6, unrevealed"
+          - gridcell "Cell at row 5, column 7, unrevealed"
+          - gridcell "Cell at row 5, column 8, unrevealed"
+          - gridcell "Cell at row 5, column 9, unrevealed"
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+        - row:
+          - gridcell "Cell at row 6, column 1, unrevealed"
+          - gridcell "Cell at row 6, column 2, unrevealed"
+          - gridcell "Cell at row 6, column 3, unrevealed"
+          - gridcell "Cell at row 6, column 4, unrevealed"
+          - gridcell "Cell at row 6, column 5, unrevealed"
+          - gridcell "Cell at row 6, column 6, unrevealed"
+          - gridcell "Cell at row 6, column 7, unrevealed"
+          - gridcell "Cell at row 6, column 8, unrevealed"
+          - gridcell "Cell at row 6, column 9, unrevealed"
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+        - row:
+          - gridcell "Cell at row 7, column 1, unrevealed"
+          - gridcell "Cell at row 7, column 2, unrevealed"
+          - gridcell "Cell at row 7, column 3, unrevealed"
+          - gridcell "Cell at row 7, column 4, unrevealed"
+          - gridcell "Cell at row 7, column 5, unrevealed"
+          - gridcell "Cell at row 7, column 6, unrevealed"
+          - gridcell "Cell at row 7, column 7, unrevealed"
+          - gridcell "Cell at row 7, column 8, unrevealed"
+          - gridcell "Cell at row 7, column 9, unrevealed"
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+        - row:
+          - gridcell "Cell at row 8, column 1, unrevealed"
+          - gridcell "Cell at row 8, column 2, unrevealed"
+          - gridcell "Cell at row 8, column 3, unrevealed"
+          - gridcell "Cell at row 8, column 4, unrevealed"
+          - gridcell "Cell at row 8, column 5, unrevealed"
+          - gridcell "Cell at row 8, column 6, unrevealed"
+          - gridcell "Cell at row 8, column 7, unrevealed"
+          - gridcell "Cell at row 8, column 8, unrevealed"
+          - gridcell "Cell at row 8, column 9, unrevealed"
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+        - row:
+          - gridcell "Cell at row 9, column 1, unrevealed"
+          - gridcell "Cell at row 9, column 2, unrevealed"
+          - gridcell "Cell at row 9, column 3, unrevealed"
+          - gridcell "Cell at row 9, column 4, unrevealed"
+          - gridcell "Cell at row 9, column 5, unrevealed"
+          - gridcell "Cell at row 9, column 6, unrevealed"
+          - gridcell "Cell at row 9, column 7, unrevealed"
+          - gridcell "Cell at row 9, column 8, unrevealed"
+          - gridcell "Cell at row 9, column 9, unrevealed"
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+        - row:
+          - gridcell /Cell at row \\d+, column 1, unrevealed/
+          - gridcell /Cell at row \\d+, column 2, unrevealed/
+          - gridcell /Cell at row \\d+, column 3, unrevealed/
+          - gridcell /Cell at row \\d+, column 4, unrevealed/
+          - gridcell /Cell at row \\d+, column 5, unrevealed/
+          - gridcell /Cell at row \\d+, column 6, unrevealed/
+          - gridcell /Cell at row \\d+, column 7, unrevealed/
+          - gridcell /Cell at row \\d+, column 8, unrevealed/
+          - gridcell /Cell at row \\d+, column 9, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+        - row:
+          - gridcell /Cell at row \\d+, column 1, unrevealed/
+          - gridcell /Cell at row \\d+, column 2, unrevealed/
+          - gridcell /Cell at row \\d+, column 3, unrevealed/
+          - gridcell /Cell at row \\d+, column 4, unrevealed/
+          - gridcell /Cell at row \\d+, column 5, unrevealed/
+          - gridcell /Cell at row \\d+, column 6, unrevealed/
+          - gridcell /Cell at row \\d+, column 7, unrevealed/
+          - gridcell /Cell at row \\d+, column 8, unrevealed/
+          - gridcell /Cell at row \\d+, column 9, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+        - row:
+          - gridcell /Cell at row \\d+, column 1, unrevealed/
+          - gridcell /Cell at row \\d+, column 2, unrevealed/
+          - gridcell /Cell at row \\d+, column 3, unrevealed/
+          - gridcell /Cell at row \\d+, column 4, unrevealed/
+          - gridcell /Cell at row \\d+, column 5, unrevealed/
+          - gridcell /Cell at row \\d+, column 6, unrevealed/
+          - gridcell /Cell at row \\d+, column 7, unrevealed/
+          - gridcell /Cell at row \\d+, column 8, unrevealed/
+          - gridcell /Cell at row \\d+, column 9, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+        - row:
+          - gridcell /Cell at row \\d+, column 1, unrevealed/
+          - gridcell /Cell at row \\d+, column 2, unrevealed/
+          - gridcell /Cell at row \\d+, column 3, unrevealed/
+          - gridcell /Cell at row \\d+, column 4, unrevealed/
+          - gridcell /Cell at row \\d+, column 5, unrevealed/
+          - gridcell /Cell at row \\d+, column 6, unrevealed/
+          - gridcell /Cell at row \\d+, column 7, unrevealed/
+          - gridcell /Cell at row \\d+, column 8, unrevealed/
+          - gridcell /Cell at row \\d+, column 9, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+        - row:
+          - gridcell /Cell at row \\d+, column 1, unrevealed/
+          - gridcell /Cell at row \\d+, column 2, unrevealed/
+          - gridcell /Cell at row \\d+, column 3, unrevealed/
+          - gridcell /Cell at row \\d+, column 4, unrevealed/
+          - gridcell /Cell at row \\d+, column 5, unrevealed/
+          - gridcell /Cell at row \\d+, column 6, unrevealed/
+          - gridcell /Cell at row \\d+, column 7, unrevealed/
+          - gridcell /Cell at row \\d+, column 8, unrevealed/
+          - gridcell /Cell at row \\d+, column 9, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+        - row:
+          - gridcell /Cell at row \\d+, column 1, unrevealed/
+          - gridcell /Cell at row \\d+, column 2, unrevealed/
+          - gridcell /Cell at row \\d+, column 3, unrevealed/
+          - gridcell /Cell at row \\d+, column 4, unrevealed/
+          - gridcell /Cell at row \\d+, column 5, unrevealed/
+          - gridcell /Cell at row \\d+, column 6, unrevealed/
+          - gridcell /Cell at row \\d+, column 7, unrevealed/
+          - gridcell /Cell at row \\d+, column 8, unrevealed/
+          - gridcell /Cell at row \\d+, column 9, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+        - row:
+          - gridcell /Cell at row \\d+, column 1, unrevealed/
+          - gridcell /Cell at row \\d+, column 2, unrevealed/
+          - gridcell /Cell at row \\d+, column 3, unrevealed/
+          - gridcell /Cell at row \\d+, column 4, unrevealed/
+          - gridcell /Cell at row \\d+, column 5, unrevealed/
+          - gridcell /Cell at row \\d+, column 6, unrevealed/
+          - gridcell /Cell at row \\d+, column 7, unrevealed/
+          - gridcell /Cell at row \\d+, column 8, unrevealed/
+          - gridcell /Cell at row \\d+, column 9, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+      - text: You can navigate the game board using the keyboard. Use arrow keys to move between cells, press Enter or Space to reveal a cell, and press F to place or remove a flag. Press R to restart the game.
+    `);
+  await page.getByText("Custom").click();
+  await expect(page.locator("body")).toMatchAriaSnapshot(`
+    - application "Minesweeper Game":
+      - heading "Minesweeper" [level=1]
+      - button "Show help": ❓ How to Play
+      - status
+      - region "Difficulty":
+        - heading "Difficulty" [level=2]
+        - radiogroup "Difficulty":
+          - radio "Beginner"
+          - radio "Intermediate"
+          - text: Intermediate
+          - radio "Expert"
+          - radio "Custom" [checked]
+        - form "Custom Settings":
+          - heading "Custom Settings" [level=3]
+          - spinbutton "Rows:"
+          - spinbutton "Columns:"
+          - spinbutton "Mines:"
+          - button "Apply Settings"
+        - paragraph: "/Board: \\\\d+×\\\\d+/"
+        - paragraph: "/Mines: \\\\d+/"
+      - group "Game controls":
+        - 'status /Mines remaining: \\d+/'
+        - button "Click to start a new game."
+        - 'timer "Time elapsed: 0 seconds"'
+      - grid /Minesweeper game board, \\d+ rows by \\d+ columns/:
+        - row /Cell at row 1, column 1, unrevealed Cell at row 1, column 2, unrevealed Cell at row 1, column 3, unrevealed Cell at row 1, column 4, unrevealed Cell at row 1, column 5, unrevealed Cell at row 1, column 6, unrevealed Cell at row 1, column 7, unrevealed Cell at row 1, column 8, unrevealed Cell at row 1, column 9, unrevealed Cell at row 1, column \\d+, unrevealed/:
+          - gridcell "Cell at row 1, column 1, unrevealed"
+          - gridcell "Cell at row 1, column 2, unrevealed"
+          - gridcell "Cell at row 1, column 3, unrevealed"
+          - gridcell "Cell at row 1, column 4, unrevealed"
+          - gridcell "Cell at row 1, column 5, unrevealed"
+          - gridcell "Cell at row 1, column 6, unrevealed"
+          - gridcell "Cell at row 1, column 7, unrevealed"
+          - gridcell "Cell at row 1, column 8, unrevealed"
+          - gridcell "Cell at row 1, column 9, unrevealed"
+          - gridcell /Cell at row 1, column \\d+, unrevealed/
+        - row /Cell at row 2, column 1, unrevealed Cell at row 2, column 2, unrevealed Cell at row 2, column 3, unrevealed Cell at row 2, column 4, unrevealed Cell at row 2, column 5, unrevealed Cell at row 2, column 6, unrevealed Cell at row 2, column 7, unrevealed Cell at row 2, column 8, unrevealed Cell at row 2, column 9, unrevealed Cell at row 2, column \\d+, unrevealed/:
+          - gridcell "Cell at row 2, column 1, unrevealed"
+          - gridcell "Cell at row 2, column 2, unrevealed"
+          - gridcell "Cell at row 2, column 3, unrevealed"
+          - gridcell "Cell at row 2, column 4, unrevealed"
+          - gridcell "Cell at row 2, column 5, unrevealed"
+          - gridcell "Cell at row 2, column 6, unrevealed"
+          - gridcell "Cell at row 2, column 7, unrevealed"
+          - gridcell "Cell at row 2, column 8, unrevealed"
+          - gridcell "Cell at row 2, column 9, unrevealed"
+          - gridcell /Cell at row 2, column \\d+, unrevealed/
+        - row /Cell at row 3, column 1, unrevealed Cell at row 3, column 2, unrevealed Cell at row 3, column 3, unrevealed Cell at row 3, column 4, unrevealed Cell at row 3, column 5, unrevealed Cell at row 3, column 6, unrevealed Cell at row 3, column 7, unrevealed Cell at row 3, column 8, unrevealed Cell at row 3, column 9, unrevealed Cell at row 3, column \\d+, unrevealed/:
+          - gridcell "Cell at row 3, column 1, unrevealed"
+          - gridcell "Cell at row 3, column 2, unrevealed"
+          - gridcell "Cell at row 3, column 3, unrevealed"
+          - gridcell "Cell at row 3, column 4, unrevealed"
+          - gridcell "Cell at row 3, column 5, unrevealed"
+          - gridcell "Cell at row 3, column 6, unrevealed"
+          - gridcell "Cell at row 3, column 7, unrevealed"
+          - gridcell "Cell at row 3, column 8, unrevealed"
+          - gridcell "Cell at row 3, column 9, unrevealed"
+          - gridcell /Cell at row 3, column \\d+, unrevealed/
+        - row /Cell at row 4, column 1, unrevealed Cell at row 4, column 2, unrevealed Cell at row 4, column 3, unrevealed Cell at row 4, column 4, unrevealed Cell at row 4, column 5, unrevealed Cell at row 4, column 6, unrevealed Cell at row 4, column 7, unrevealed Cell at row 4, column 8, unrevealed Cell at row 4, column 9, unrevealed Cell at row 4, column \\d+, unrevealed/:
+          - gridcell "Cell at row 4, column 1, unrevealed"
+          - gridcell "Cell at row 4, column 2, unrevealed"
+          - gridcell "Cell at row 4, column 3, unrevealed"
+          - gridcell "Cell at row 4, column 4, unrevealed"
+          - gridcell "Cell at row 4, column 5, unrevealed"
+          - gridcell "Cell at row 4, column 6, unrevealed"
+          - gridcell "Cell at row 4, column 7, unrevealed"
+          - gridcell "Cell at row 4, column 8, unrevealed"
+          - gridcell "Cell at row 4, column 9, unrevealed"
+          - gridcell /Cell at row 4, column \\d+, unrevealed/
+        - row /Cell at row 5, column 1, unrevealed Cell at row 5, column 2, unrevealed Cell at row 5, column 3, unrevealed Cell at row 5, column 4, unrevealed Cell at row 5, column 5, unrevealed Cell at row 5, column 6, unrevealed Cell at row 5, column 7, unrevealed Cell at row 5, column 8, unrevealed Cell at row 5, column 9, unrevealed Cell at row 5, column \\d+, unrevealed/:
+          - gridcell "Cell at row 5, column 1, unrevealed"
+          - gridcell "Cell at row 5, column 2, unrevealed"
+          - gridcell "Cell at row 5, column 3, unrevealed"
+          - gridcell "Cell at row 5, column 4, unrevealed"
+          - gridcell "Cell at row 5, column 5, unrevealed"
+          - gridcell "Cell at row 5, column 6, unrevealed"
+          - gridcell "Cell at row 5, column 7, unrevealed"
+          - gridcell "Cell at row 5, column 8, unrevealed"
+          - gridcell "Cell at row 5, column 9, unrevealed"
+          - gridcell /Cell at row 5, column \\d+, unrevealed/
+        - row /Cell at row 6, column 1, unrevealed Cell at row 6, column 2, unrevealed Cell at row 6, column 3, unrevealed Cell at row 6, column 4, unrevealed Cell at row 6, column 5, unrevealed Cell at row 6, column 6, unrevealed Cell at row 6, column 7, unrevealed Cell at row 6, column 8, unrevealed Cell at row 6, column 9, unrevealed Cell at row 6, column \\d+, unrevealed/:
+          - gridcell "Cell at row 6, column 1, unrevealed"
+          - gridcell "Cell at row 6, column 2, unrevealed"
+          - gridcell "Cell at row 6, column 3, unrevealed"
+          - gridcell "Cell at row 6, column 4, unrevealed"
+          - gridcell "Cell at row 6, column 5, unrevealed"
+          - gridcell "Cell at row 6, column 6, unrevealed"
+          - gridcell "Cell at row 6, column 7, unrevealed"
+          - gridcell "Cell at row 6, column 8, unrevealed"
+          - gridcell "Cell at row 6, column 9, unrevealed"
+          - gridcell /Cell at row 6, column \\d+, unrevealed/
+        - row /Cell at row 7, column 1, unrevealed Cell at row 7, column 2, unrevealed Cell at row 7, column 3, unrevealed Cell at row 7, column 4, unrevealed Cell at row 7, column 5, unrevealed Cell at row 7, column 6, unrevealed Cell at row 7, column 7, unrevealed Cell at row 7, column 8, unrevealed Cell at row 7, column 9, unrevealed Cell at row 7, column \\d+, unrevealed/:
+          - gridcell "Cell at row 7, column 1, unrevealed"
+          - gridcell "Cell at row 7, column 2, unrevealed"
+          - gridcell "Cell at row 7, column 3, unrevealed"
+          - gridcell "Cell at row 7, column 4, unrevealed"
+          - gridcell "Cell at row 7, column 5, unrevealed"
+          - gridcell "Cell at row 7, column 6, unrevealed"
+          - gridcell "Cell at row 7, column 7, unrevealed"
+          - gridcell "Cell at row 7, column 8, unrevealed"
+          - gridcell "Cell at row 7, column 9, unrevealed"
+          - gridcell /Cell at row 7, column \\d+, unrevealed/
+        - row /Cell at row 8, column 1, unrevealed Cell at row 8, column 2, unrevealed Cell at row 8, column 3, unrevealed Cell at row 8, column 4, unrevealed Cell at row 8, column 5, unrevealed Cell at row 8, column 6, unrevealed Cell at row 8, column 7, unrevealed Cell at row 8, column 8, unrevealed Cell at row 8, column 9, unrevealed Cell at row 8, column \\d+, unrevealed/:
+          - gridcell "Cell at row 8, column 1, unrevealed"
+          - gridcell "Cell at row 8, column 2, unrevealed"
+          - gridcell "Cell at row 8, column 3, unrevealed"
+          - gridcell "Cell at row 8, column 4, unrevealed"
+          - gridcell "Cell at row 8, column 5, unrevealed"
+          - gridcell "Cell at row 8, column 6, unrevealed"
+          - gridcell "Cell at row 8, column 7, unrevealed"
+          - gridcell "Cell at row 8, column 8, unrevealed"
+          - gridcell "Cell at row 8, column 9, unrevealed"
+          - gridcell /Cell at row 8, column \\d+, unrevealed/
+        - row /Cell at row 9, column 1, unrevealed Cell at row 9, column 2, unrevealed Cell at row 9, column 3, unrevealed Cell at row 9, column 4, unrevealed Cell at row 9, column 5, unrevealed Cell at row 9, column 6, unrevealed Cell at row 9, column 7, unrevealed Cell at row 9, column 8, unrevealed Cell at row 9, column 9, unrevealed Cell at row 9, column \\d+, unrevealed/:
+          - gridcell "Cell at row 9, column 1, unrevealed"
+          - gridcell "Cell at row 9, column 2, unrevealed"
+          - gridcell "Cell at row 9, column 3, unrevealed"
+          - gridcell "Cell at row 9, column 4, unrevealed"
+          - gridcell "Cell at row 9, column 5, unrevealed"
+          - gridcell "Cell at row 9, column 6, unrevealed"
+          - gridcell "Cell at row 9, column 7, unrevealed"
+          - gridcell "Cell at row 9, column 8, unrevealed"
+          - gridcell "Cell at row 9, column 9, unrevealed"
+          - gridcell /Cell at row 9, column \\d+, unrevealed/
+        - row /Cell at row \\d+, column 1, unrevealed Cell at row \\d+, column 2, unrevealed Cell at row \\d+, column 3, unrevealed Cell at row \\d+, column 4, unrevealed Cell at row \\d+, column 5, unrevealed Cell at row \\d+, column 6, unrevealed Cell at row \\d+, column 7, unrevealed Cell at row \\d+, column 8, unrevealed Cell at row \\d+, column 9, unrevealed Cell at row \\d+, column \\d+, unrevealed/:
+          - gridcell /Cell at row \\d+, column 1, unrevealed/
+          - gridcell /Cell at row \\d+, column 2, unrevealed/
+          - gridcell /Cell at row \\d+, column 3, unrevealed/
+          - gridcell /Cell at row \\d+, column 4, unrevealed/
+          - gridcell /Cell at row \\d+, column 5, unrevealed/
+          - gridcell /Cell at row \\d+, column 6, unrevealed/
+          - gridcell /Cell at row \\d+, column 7, unrevealed/
+          - gridcell /Cell at row \\d+, column 8, unrevealed/
+          - gridcell /Cell at row \\d+, column 9, unrevealed/
+          - gridcell /Cell at row \\d+, column \\d+, unrevealed/
+      - text: You can navigate the game board using the keyboard. Use arrow keys to move between cells, press Enter or Space to reveal a cell, and press F to place or remove a flag. Press R to restart the game.
+    `);
+});
+
+test("text matching by difficulty option", async ({ page }) => {
+  await page.goto("http://localhost:5173/");
+  await expect(page.getByTestId("difficulty-selector")).toContainText(
+    "Board: 9×9"
+  );
+  await page.getByText("Mines:").click();
+  await expect(page.getByTestId("difficulty-selector")).toContainText(
+    "Mines: 10"
+  );
+  await page.getByText("Intermediate").click();
+  await expect(page.getByTestId("difficulty-selector")).toContainText(
+    "Board: 16×16"
+  );
+  await expect(page.getByTestId("difficulty-selector")).toContainText(
+    "Mines: 40"
+  );
+  await page.getByText("Expert").click();
+  await expect(page.getByTestId("difficulty-selector")).toContainText(
+    "Board: 16×30"
+  );
+  await expect(page.getByTestId("difficulty-selector")).toContainText(
+    "Mines: 99"
+  );
+  await page.getByText("Custom").click();
+  await expect(page.getByRole("spinbutton", { name: "Rows:" })).toHaveValue(
+    "10"
+  );
+  await expect(page.getByRole("spinbutton", { name: "Columns:" })).toHaveValue(
+    "10"
+  );
+  await expect(page.getByRole("spinbutton", { name: "Mines:" })).toHaveValue(
+    "15"
+  );
+  await expect(page.getByTestId("difficulty-selector")).toContainText(
+    "Board: 10×10"
+  );
+  await expect(page.getByTestId("difficulty-selector")).toContainText(
+    "Mines: 15"
+  );
+});
+
+test("mine counter by difficulty option", async ({ page }) => {
+  await page.goto("http://localhost:5173/");
+  await expect(page.getByTestId("mine-counter")).toContainText("010");
+  await page.getByText("Intermediate").click();
+  await expect(page.getByTestId("mine-counter")).toContainText("040");
+  await page.getByText("Expert").click();
+  await expect(page.getByTestId("mine-counter")).toContainText("099");
+  await page.getByText("Custom").click();
+  await expect(page.getByTestId("mine-counter")).toContainText("015");
+});
