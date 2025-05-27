@@ -43,10 +43,6 @@ function App() {
 
       <GameInstructions />
 
-      <div className="status-announcer" aria-live="polite" role="status">
-        {statusMessage}
-      </div>
-
       <DifficultySelector
         currentDifficulty={difficulty}
         onSelectDifficulty={handleDifficultySelect}
@@ -61,6 +57,10 @@ function App() {
         onLoad={loadGameState}
         hasSavedGame={hasSavedGame}
       />
+
+      <div className="status-announcer" aria-live="polite" role="status">
+        {statusMessage}
+      </div>
 
       <GameBoard
         board={board}
