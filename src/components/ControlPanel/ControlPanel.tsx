@@ -7,6 +7,9 @@ interface ControlPanelProps {
   minesRemaining: number;
   gameStatus: GameStatus;
   onReset: () => void;
+  onSave?: () => void;
+  onLoad?: () => void;
+  hasSavedGame?: boolean;
 }
 
 const ControlPanel: FC<ControlPanelProps> = ({
@@ -14,6 +17,9 @@ const ControlPanel: FC<ControlPanelProps> = ({
   minesRemaining,
   gameStatus,
   onReset,
+  onSave,
+  onLoad,
+  hasSavedGame = false,
 }) => {
   // Format time as 3-digit display (000-999)
   const formatTime = (time: number): string => {
@@ -57,38 +63,64 @@ const ControlPanel: FC<ControlPanelProps> = ({
   };
 
   return (
-    <div
-      className="control-panel"
-      data-testid="control-panel"
-      role="group"
-      aria-label="Game controls"
-    >
-      <div
-        className="mine-counter"
-        data-testid="mine-counter"
-        role="status"
-        aria-label={`Mines remaining: ${minesRemaining}`}
-      >
-        {formatMines(minesRemaining)}
+    <>
+      <div className="control-panel">
+        <button
+          className="save-button"
+          onClick={onSave}
+          aria-label="Save current game state"
+          data-testid="save-game-btn"
+          type="button"
+          disabled={!onSave}
+        >
+          Save Game
+        </button>
+        <button
+          className="load-button"
+          onClick={onLoad}
+          aria-label="Load saved game state"
+          data-testid="load-game-btn"
+          type="button"
+          disabled={!onLoad || !hasSavedGame}
+        >
+          Load Game
+        </button>
       </div>
 
-      <button
-        className="reset-button"
-        onClick={onReset}
-        aria-label={getStatusDescription()}
-      >
-        <span aria-hidden="true">{getFaceEmoji()}</span>
-      </button>
-
       <div
-        className="timer"
-        data-testid="timer"
-        role="timer"
-        aria-label={`Time elapsed: ${timeElapsed} seconds`}
+        className="control-panel"
+        data-testid="control-panel"
+        role="group"
+        aria-label="Game controls"
       >
-        {formatTime(timeElapsed)}
+        <div
+          className="mine-counter"
+          data-testid="mine-counter"
+          role="status"
+          aria-label={`Mines remaining: ${minesRemaining}`}
+        >
+          {formatMines(minesRemaining)}
+        </div>
+
+        <button
+          className="reset-button"
+          onClick={onReset}
+          aria-label={getStatusDescription()}
+          data-testid="reset-btn"
+        >
+          <span aria-hidden="true">{getFaceEmoji()}</span>
+        </button>
+
+        <div
+          className="timer"
+          data-testid="timer"
+          role="timer"
+          aria-label={`Time elapsed: ${timeElapsed} seconds`}
+        >
+          {formatTime(timeElapsed)}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

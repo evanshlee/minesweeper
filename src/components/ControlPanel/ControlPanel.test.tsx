@@ -21,7 +21,7 @@ test("renders correctly with default props", () => {
   expect(screen.getByTestId("control-panel")).toBeInTheDocument();
   expect(screen.getByTestId("mine-counter")).toHaveTextContent("010");
   expect(screen.getByTestId("timer")).toHaveTextContent("045");
-  expect(screen.getByRole("button")).toHaveTextContent("🙂");
+  expect(screen.getByTestId("reset-btn")).toHaveTextContent("🙂");
 });
 
 test.each([
@@ -55,13 +55,13 @@ test.each([
   ["lost", "😵"],
 ])("displays correct emoji based on game status: %s", (status, emoji) => {
   render(<ControlPanel {...defaultProps} gameStatus={status as GameStatus} />);
-  expect(screen.getByRole("button")).toHaveTextContent(emoji);
+  expect(screen.getByTestId("reset-btn")).toHaveTextContent(emoji);
 });
 
 test("calls onReset when reset button is clicked", () => {
   render(<ControlPanel {...defaultProps} />);
 
-  fireEvent.click(screen.getByRole("button"));
+  fireEvent.click(screen.getByTestId("reset-btn"));
   expect(defaultProps.onReset).toHaveBeenCalledTimes(1);
 });
 
@@ -93,5 +93,52 @@ test.each([
   ["lost", "Game over. Click to restart."],
 ])("reset button has correct accessibility label for %s", (status, label) => {
   render(<ControlPanel {...defaultProps} gameStatus={status as GameStatus} />);
-  expect(screen.getByRole("button")).toHaveAttribute("aria-label", label);
+  expect(screen.getByTestId("reset-btn")).toHaveAttribute("aria-label", label);
+});
+
+test("renders Save Game and Load Game buttons and calls handlers", () => {
+  const onSave = vi.fn();
+  const onLoad = vi.fn();
+  render(
+    <ControlPanel
+      {...defaultProps}
+      onSave={onSave}
+      onLoad={onLoad}
+      hasSavedGame={true}
+    />
+  );
+  const saveBtn = screen.getByTestId("save-game-btn");
+  const loadBtn = screen.getByTestId("load-game-btn");
+  expect(saveBtn).toBeInTheDocument();
+  expect(loadBtn).toBeInTheDocument();
+  fireEvent.click(saveBtn);
+  expect(onSave).toHaveBeenCalledTimes(1);
+  fireEvent.click(loadBtn);
+  expect(onLoad).toHaveBeenCalledTimes(1);
+});
+
+test("Load Game button is disabled if no saved game", () => {
+  render(
+    <ControlPanel
+      {...defaultProps}
+      onLoad={() => {}}
+      onSave={() => {}}
+      hasSavedGame={false}
+    />
+  );
+  const loadBtn = screen.getByTestId("load-game-btn");
+  expect(loadBtn).toBeDisabled();
+});
+
+test("Load Game button is enabled if there is a saved game", () => {
+  render(
+    <ControlPanel
+      {...defaultProps}
+      onLoad={() => {}}
+      onSave={() => {}}
+      hasSavedGame={true}
+    />
+  );
+  const loadBtn = screen.getByTestId("load-game-btn");
+  expect(loadBtn).not.toBeDisabled();
 });

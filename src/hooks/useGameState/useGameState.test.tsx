@@ -1,6 +1,8 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import type { BoardConfig } from "../../core/types";
+import type { GameStorage } from "./GameStorage";
+import type { GameStateForStorage } from "./useGameState";
 import { useGameState } from "./useGameState";
 
 // Timer mock
@@ -290,4 +292,111 @@ test("handles difficulty selection with custom config", () => {
   expect(result.current.difficulty).toBe("expert");
   expect(result.current.minesRemaining).toBe(99); // Expert has 99 mines
   expect(result.current.gameStatus).toBe("idle");
+});
+
+test("saves and loads game state to/from localStorage", () => {
+  // Arrange
+  const { result } = renderHook(() => useGameState("custom", testConfig));
+
+  // Act - Start a game and make some moves
+  act(() => {
+    result.current.handleCellClick(0, 0);
+    result.current.handleCellFlag(1, 1);
+  });
+
+  // Save current state to localStorage
+  act(() => {
+    result.current.saveGameState();
+  });
+
+  // Simulate page reload by creating a new hook instance
+  const { result: newResult } = renderHook(() =>
+    useGameState("custom", testConfig)
+  );
+
+  // Load state from localStorage
+  act(() => {
+    newResult.current.loadGameState();
+  });
+
+  // Assert - The loaded state matches the saved state
+  expect(newResult.current.board).toEqual(result.current.board);
+  expect(newResult.current.minesRemaining).toBe(result.current.minesRemaining);
+  expect(newResult.current.gameStatus).toBe(result.current.gameStatus);
+});
+
+test("loaded game state persists after loadGameState is called", () => {
+  // Arrange: Save a custom state to localStorage
+  const customState = {
+    board: [
+      [
+        { isMine: false, isRevealed: true, isFlagged: false, adjacentMines: 0 },
+        { isMine: true, isRevealed: false, isFlagged: false, adjacentMines: 1 },
+      ],
+      [
+        { isMine: false, isRevealed: false, isFlagged: true, adjacentMines: 1 },
+        {
+          isMine: false,
+          isRevealed: false,
+          isFlagged: false,
+          adjacentMines: 1,
+        },
+      ],
+    ],
+    gameStatus: "playing",
+    minesRemaining: 2,
+    difficulty: "custom",
+    customConfig: { rows: 2, columns: 2, mines: 1 },
+    timeElapsed: 42,
+  };
+  window.localStorage.setItem(
+    "minesweeper-game-state",
+    JSON.stringify(customState)
+  );
+
+  // Act: Mount a new game and load state
+  const { result } = renderHook(() => useGameState("beginner"));
+  act(() => {
+    result.current.loadGameState();
+  });
+
+  // Assert: State matches loaded state and is not reset
+  expect(result.current.board).toEqual(customState.board);
+  expect(result.current.gameStatus).toBe("playing");
+  expect(result.current.minesRemaining).toBe(2);
+  expect(result.current.difficulty).toBe("custom");
+  expect(result.current.timeElapsed).toBe(42);
+
+  // Wait a tick to ensure no reset happens
+  act(() => {
+    // simulate passage of time
+  });
+  expect(result.current.board).toEqual(customState.board);
+  expect(result.current.gameStatus).toBe("playing");
+  expect(result.current.minesRemaining).toBe(2);
+  expect(result.current.difficulty).toBe("custom");
+  expect(result.current.timeElapsed).toBe(42);
+
+  // Clean up
+  window.localStorage.removeItem("minesweeper-game-state");
+});
+
+test("hasSavedGame reflects storage.exists() and updates on storage event", () => {
+  let exists = false;
+  const mockStorage: GameStorage<GameStateForStorage> = {
+    load: () => undefined,
+    save: () => {},
+    exists: () => exists,
+    remove: () => {},
+  };
+  const { result, rerender } = renderHook(() =>
+    useGameState("beginner", undefined, mockStorage)
+  );
+  // Initially false
+  expect(result.current.hasSavedGame).toBe(false);
+  // Change storage.exists to true and rerender
+  exists = true;
+  window.dispatchEvent(new Event("storage"));
+  rerender();
+  expect(result.current.hasSavedGame).toBe(true);
 });

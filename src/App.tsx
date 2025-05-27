@@ -1,3 +1,5 @@
+import { GameLocalStorage } from "./hooks/useGameState/GameStorage";
+import type { GameStateForStorage } from "./hooks/useGameState/useGameState";
 import { useGameState } from "./hooks/useGameState/useGameState";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts/useKeyboardShortcuts";
 
@@ -9,6 +11,9 @@ import GameInstructions from "./components/GameInstructions/GameInstructions";
 import "./App.css";
 
 function App() {
+  const storage = new GameLocalStorage<GameStateForStorage>(
+    "minesweeper-game-state"
+  );
   const {
     board,
     gameStatus,
@@ -20,7 +25,10 @@ function App() {
     resetGame,
     handleDifficultySelect,
     difficulty,
-  } = useGameState();
+    saveGameState,
+    loadGameState,
+    hasSavedGame,
+  } = useGameState("beginner", undefined, storage);
 
   // Handle Restart with keyboard shortcut
   useKeyboardShortcuts({ onRestart: resetGame });
@@ -35,10 +43,6 @@ function App() {
 
       <GameInstructions />
 
-      <div className="status-announcer" aria-live="polite" role="status">
-        {statusMessage}
-      </div>
-
       <DifficultySelector
         currentDifficulty={difficulty}
         onSelectDifficulty={handleDifficultySelect}
@@ -49,7 +53,14 @@ function App() {
         timeElapsed={timeElapsed}
         onReset={resetGame}
         gameStatus={gameStatus}
+        onSave={saveGameState}
+        onLoad={loadGameState}
+        hasSavedGame={hasSavedGame}
       />
+
+      <div className="status-announcer" aria-live="polite" role="status">
+        {statusMessage}
+      </div>
 
       <GameBoard
         board={board}

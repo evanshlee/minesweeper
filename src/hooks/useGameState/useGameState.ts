@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   checkWinCondition,
   DifficultySettings,
@@ -14,12 +14,25 @@ import {
   type Difficulty,
   type GameStatus,
 } from "../../core/types";
+import { GameLocalStorage, GameStorage } from "./GameStorage";
 import { useGameTimer } from "./useGameTimer";
 import { useStatusMessage } from "./useStatusMessage";
 
+export interface GameStateForStorage {
+  board: CellData[][];
+  gameStatus: GameStatus;
+  minesRemaining: number;
+  difficulty: Difficulty;
+  customConfig?: BoardConfig;
+  timeElapsed: number;
+}
+
 export const useGameState = (
   initialDifficulty: Difficulty = "beginner",
-  initialCustomConfig?: BoardConfig
+  initialCustomConfig?: BoardConfig,
+  storage: GameStorage<GameStateForStorage> = new GameLocalStorage<GameStateForStorage>(
+    "minesweeper-game-state"
+  )
 ) => {
   const [difficulty, setDifficulty] = useState<Difficulty>(initialDifficulty);
   const [customConfig, setCustomConfig] = useState<BoardConfig | undefined>(
@@ -39,7 +52,7 @@ export const useGameState = (
   const [minesRemaining, setMinesRemaining] = useState(config.mines);
   const [isFirstClick, setIsFirstClick] = useState(true);
 
-  const { timeElapsed, resetTimer } = useGameTimer(gameStatus);
+  const { timeElapsed, resetTimer, setTimeElapsed } = useGameTimer(gameStatus);
   const { statusMessage, resetStatusMessage } = useStatusMessage(
     gameStatus,
     prevGameStatus,
@@ -136,10 +149,70 @@ export const useGameState = (
     []
   );
 
-  // Reset game when difficulty changes
+  const isLoadingRef = useRef(false);
+
+  // Load game state from storage
+  const loadGameState = useCallback(() => {
+    try {
+      const storedData = storage.load();
+      if (!storedData) return;
+      isLoadingRef.current = true;
+      setDifficulty(storedData.difficulty);
+      setCustomConfig(storedData.customConfig);
+      setBoard(storedData.board);
+      setGameStatus(storedData.gameStatus);
+      setMinesRemaining(storedData.minesRemaining);
+      setIsFirstClick(storedData.gameStatus === "idle");
+      setTimeElapsed(storedData.timeElapsed ?? 0);
+      // isLoadingRef.current will be set to false after the next effect
+    } catch {
+      // Ignore parse errors
+    }
+  }, [setTimeElapsed, storage]);
+
+  // Reset game when difficulty or customConfig changes, unless loading
   useEffect(() => {
+    if (isLoadingRef.current) {
+      isLoadingRef.current = false;
+      return;
+    }
     resetGame();
   }, [difficulty, customConfig, resetGame]);
+
+  // Save game state to storage
+  const saveGameState = useCallback(() => {
+    const stateToSave: GameStateForStorage = {
+      board,
+      gameStatus,
+      minesRemaining,
+      difficulty,
+      customConfig,
+      timeElapsed,
+    };
+    try {
+      storage.save(stateToSave);
+    } catch {
+      // Ignore quota errors
+    }
+  }, [
+    board,
+    gameStatus,
+    minesRemaining,
+    difficulty,
+    customConfig,
+    timeElapsed,
+    storage,
+  ]);
+
+  const [hasSavedGame, setHasSavedGame] = useState<boolean>(() =>
+    storage.exists()
+  );
+  useEffect(() => {
+    setHasSavedGame(storage.exists());
+    const handler = () => setHasSavedGame(storage.exists());
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, [storage]);
 
   return {
     board,
@@ -152,5 +225,8 @@ export const useGameState = (
     handleCellFlag,
     resetGame,
     handleDifficultySelect,
+    saveGameState,
+    loadGameState,
+    hasSavedGame,
   };
 };
