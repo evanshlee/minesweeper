@@ -1,3 +1,5 @@
+import { GameLocalStorage } from "./hooks/useGameState/GameStorage";
+import type { GameStateForStorage } from "./hooks/useGameState/useGameState";
 import { useGameState } from "./hooks/useGameState/useGameState";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts/useKeyboardShortcuts";
 
@@ -9,6 +11,9 @@ import GameInstructions from "./components/GameInstructions/GameInstructions";
 import "./App.css";
 
 function App() {
+  const storage = new GameLocalStorage<GameStateForStorage>(
+    "minesweeper-game-state"
+  );
   const {
     board,
     gameStatus,
@@ -22,7 +27,7 @@ function App() {
     difficulty,
     saveGameState,
     loadGameState,
-  } = useGameState();
+  } = useGameState("beginner", undefined, storage);
 
   // Handle Restart with keyboard shortcut
   useKeyboardShortcuts({ onRestart: resetGame });
@@ -53,6 +58,7 @@ function App() {
         gameStatus={gameStatus}
         onSave={saveGameState}
         onLoad={loadGameState}
+        storage={storage}
       />
 
       <GameBoard

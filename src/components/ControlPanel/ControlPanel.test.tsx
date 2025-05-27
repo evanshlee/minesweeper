@@ -1,6 +1,8 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, expect, test, vi } from "vitest";
 import { GameStatus } from "../../core/types";
+import type { GameStorage } from "../../hooks/useGameState/GameStorage";
+import type { GameStateForStorage } from "../../hooks/useGameState/useGameState";
 import ControlPanel from "./ControlPanel";
 
 const defaultProps = {
@@ -97,14 +99,28 @@ test.each([
 });
 
 test("renders Save Game and Load Game buttons and calls handlers", () => {
-  // Load 버튼이 활성화되도록 더미 데이터 저장
-  window.localStorage.setItem(
-    "minesweeper-game-state",
-    JSON.stringify({ foo: "bar" })
-  );
+  const mockStorage: GameStorage<GameStateForStorage> = {
+    load: () => ({
+      board: [],
+      gameStatus: "idle",
+      minesRemaining: 0,
+      difficulty: "beginner",
+      timeElapsed: 0,
+    }),
+    save: () => {},
+    exists: () => true,
+    remove: () => {},
+  };
   const onSave = vi.fn();
   const onLoad = vi.fn();
-  render(<ControlPanel {...defaultProps} onSave={onSave} onLoad={onLoad} />);
+  render(
+    <ControlPanel
+      {...defaultProps}
+      onSave={onSave}
+      onLoad={onLoad}
+      storage={mockStorage}
+    />
+  );
   const saveBtn = screen.getByTestId("save-game-btn");
   const loadBtn = screen.getByTestId("load-game-btn");
   expect(saveBtn).toBeInTheDocument();
@@ -113,31 +129,48 @@ test("renders Save Game and Load Game buttons and calls handlers", () => {
   expect(onSave).toHaveBeenCalledTimes(1);
   fireEvent.click(loadBtn);
   expect(onLoad).toHaveBeenCalledTimes(1);
-  // Clean up
-  window.localStorage.removeItem("minesweeper-game-state");
 });
 
-test("Load Game button is disabled if no saved game in localStorage", () => {
-  // Remove any saved game
-  window.localStorage.removeItem("minesweeper-game-state");
+test("Load Game button is disabled if no saved game in storage adapter", () => {
+  const mockStorage: GameStorage<GameStateForStorage> = {
+    load: () => undefined,
+    save: () => {},
+    exists: () => false,
+    remove: () => {},
+  };
   render(
-    <ControlPanel {...defaultProps} onLoad={() => {}} onSave={() => {}} />
+    <ControlPanel
+      {...defaultProps}
+      onLoad={() => {}}
+      onSave={() => {}}
+      storage={mockStorage}
+    />
   );
   const loadBtn = screen.getByTestId("load-game-btn");
   expect(loadBtn).toBeDisabled();
 });
 
-test("Load Game button is enabled if there is a saved game in localStorage", () => {
-  // Set a dummy saved game
-  window.localStorage.setItem(
-    "minesweeper-game-state",
-    JSON.stringify({ foo: "bar" })
-  );
+test("Load Game button is enabled if there is a saved game in storage adapter", () => {
+  const mockStorage: GameStorage<GameStateForStorage> = {
+    load: () => ({
+      board: [],
+      gameStatus: "idle",
+      minesRemaining: 0,
+      difficulty: "beginner",
+      timeElapsed: 0,
+    }),
+    save: () => {},
+    exists: () => true,
+    remove: () => {},
+  };
   render(
-    <ControlPanel {...defaultProps} onLoad={() => {}} onSave={() => {}} />
+    <ControlPanel
+      {...defaultProps}
+      onLoad={() => {}}
+      onSave={() => {}}
+      storage={mockStorage}
+    />
   );
   const loadBtn = screen.getByTestId("load-game-btn");
   expect(loadBtn).not.toBeDisabled();
-  // Clean up
-  window.localStorage.removeItem("minesweeper-game-state");
 });

@@ -1,6 +1,8 @@
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { GameStatus } from "../../core/types";
+import type { GameStorage } from "../../hooks/useGameState/GameStorage";
+import type { GameStateForStorage } from "../../hooks/useGameState/useGameState";
 import "./ControlPanel.css";
 
 interface ControlPanelProps {
@@ -10,6 +12,7 @@ interface ControlPanelProps {
   onReset: () => void;
   onSave?: () => void;
   onLoad?: () => void;
+  storage?: GameStorage<GameStateForStorage>;
 }
 
 const ControlPanel: FC<ControlPanelProps> = ({
@@ -19,6 +22,7 @@ const ControlPanel: FC<ControlPanelProps> = ({
   onReset,
   onSave,
   onLoad,
+  storage,
 }) => {
   // Format time as 3-digit display (000-999)
   const formatTime = (time: number): string => {
@@ -61,16 +65,21 @@ const ControlPanel: FC<ControlPanelProps> = ({
     }
   };
 
-  // Load Game 버튼 활성화 여부 관리
   const [hasSavedGame, setHasSavedGame] = useState<boolean>(false);
   useEffect(() => {
-    setHasSavedGame(!!localStorage.getItem("minesweeper-game-state"));
-    // storage 이벤트로 다른 탭에서 저장/삭제 시에도 반영
-    const handler = () =>
+    if (storage && typeof storage.exists === "function") {
+      setHasSavedGame(storage.exists());
+      const handler = () => setHasSavedGame(storage.exists());
+      window.addEventListener("storage", handler);
+      return () => window.removeEventListener("storage", handler);
+    } else {
       setHasSavedGame(!!localStorage.getItem("minesweeper-game-state"));
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
-  }, []);
+      const handler = () =>
+        setHasSavedGame(!!localStorage.getItem("minesweeper-game-state"));
+      window.addEventListener("storage", handler);
+      return () => window.removeEventListener("storage", handler);
+    }
+  }, [storage]);
 
   return (
     <>

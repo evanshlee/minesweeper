@@ -14,12 +14,25 @@ import {
   type Difficulty,
   type GameStatus,
 } from "../../core/types";
+import { GameLocalStorage, GameStorage } from "./GameStorage";
 import { useGameTimer } from "./useGameTimer";
 import { useStatusMessage } from "./useStatusMessage";
 
+export interface GameStateForStorage {
+  board: CellData[][];
+  gameStatus: GameStatus;
+  minesRemaining: number;
+  difficulty: Difficulty;
+  customConfig?: BoardConfig;
+  timeElapsed: number;
+}
+
 export const useGameState = (
   initialDifficulty: Difficulty = "beginner",
-  initialCustomConfig?: BoardConfig
+  initialCustomConfig?: BoardConfig,
+  storage: GameStorage<GameStateForStorage> = new GameLocalStorage<GameStateForStorage>(
+    "minesweeper-game-state"
+  )
 ) => {
   const [difficulty, setDifficulty] = useState<Difficulty>(initialDifficulty);
   const [customConfig, setCustomConfig] = useState<BoardConfig | undefined>(
@@ -138,25 +151,24 @@ export const useGameState = (
 
   const isLoadingRef = useRef(false);
 
-  // Load game state from localStorage
+  // Load game state from storage
   const loadGameState = useCallback(() => {
     try {
-      const data = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (!data) return;
-      const parsed: GameStateForStorage = JSON.parse(data);
+      const storedData = storage.load();
+      if (!storedData) return;
       isLoadingRef.current = true;
-      setDifficulty(parsed.difficulty);
-      setCustomConfig(parsed.customConfig);
-      setBoard(parsed.board);
-      setGameStatus(parsed.gameStatus);
-      setMinesRemaining(parsed.minesRemaining);
-      setIsFirstClick(parsed.gameStatus === "idle");
-      setTimeElapsed(parsed.timeElapsed ?? 0);
+      setDifficulty(storedData.difficulty);
+      setCustomConfig(storedData.customConfig);
+      setBoard(storedData.board);
+      setGameStatus(storedData.gameStatus);
+      setMinesRemaining(storedData.minesRemaining);
+      setIsFirstClick(storedData.gameStatus === "idle");
+      setTimeElapsed(storedData.timeElapsed ?? 0);
       // isLoadingRef.current will be set to false after the next effect
     } catch {
       // Ignore parse errors
     }
-  }, [setTimeElapsed]);
+  }, [setTimeElapsed, storage]);
 
   // Reset game when difficulty or customConfig changes, unless loading
   useEffect(() => {
@@ -167,18 +179,7 @@ export const useGameState = (
     resetGame();
   }, [difficulty, customConfig, resetGame]);
 
-  interface GameStateForStorage {
-    board: CellData[][];
-    gameStatus: GameStatus;
-    minesRemaining: number;
-    difficulty: Difficulty;
-    customConfig?: BoardConfig;
-    timeElapsed: number;
-  }
-
-  const LOCAL_STORAGE_KEY = "minesweeper-game-state";
-
-  // Save game state to localStorage
+  // Save game state to storage
   const saveGameState = useCallback(() => {
     const stateToSave: GameStateForStorage = {
       board,
@@ -189,7 +190,7 @@ export const useGameState = (
       timeElapsed,
     };
     try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(stateToSave));
+      storage.save(stateToSave);
     } catch {
       // Ignore quota errors
     }
@@ -200,6 +201,7 @@ export const useGameState = (
     difficulty,
     customConfig,
     timeElapsed,
+    storage,
   ]);
 
   return {
