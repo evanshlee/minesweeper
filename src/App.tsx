@@ -20,6 +20,8 @@ function App() {
     resetGame,
     handleDifficultySelect,
     difficulty,
+    saveGameState,
+    loadGameState,
   } = useGameState();
 
   // Handle Restart with keyboard shortcut
@@ -49,6 +51,8 @@ function App() {
         timeElapsed={timeElapsed}
         onReset={resetGame}
         gameStatus={gameStatus}
+        onSave={saveGameState}
+        onLoad={loadGameState}
       />
 
       <GameBoard

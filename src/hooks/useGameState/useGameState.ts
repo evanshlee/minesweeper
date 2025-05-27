@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   checkWinCondition,
   DifficultySettings,
@@ -39,7 +39,7 @@ export const useGameState = (
   const [minesRemaining, setMinesRemaining] = useState(config.mines);
   const [isFirstClick, setIsFirstClick] = useState(true);
 
-  const { timeElapsed, resetTimer } = useGameTimer(gameStatus);
+  const { timeElapsed, resetTimer, setTimeElapsed } = useGameTimer(gameStatus);
   const { statusMessage, resetStatusMessage } = useStatusMessage(
     gameStatus,
     prevGameStatus,
@@ -136,10 +136,71 @@ export const useGameState = (
     []
   );
 
-  // Reset game when difficulty changes
+  const isLoadingRef = useRef(false);
+
+  // Load game state from localStorage
+  const loadGameState = useCallback(() => {
+    try {
+      const data = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (!data) return;
+      const parsed: GameStateForStorage = JSON.parse(data);
+      isLoadingRef.current = true;
+      setDifficulty(parsed.difficulty);
+      setCustomConfig(parsed.customConfig);
+      setBoard(parsed.board);
+      setGameStatus(parsed.gameStatus);
+      setMinesRemaining(parsed.minesRemaining);
+      setIsFirstClick(parsed.gameStatus === "idle");
+      setTimeElapsed(parsed.timeElapsed ?? 0);
+      // isLoadingRef.current will be set to false after the next effect
+    } catch {
+      // Ignore parse errors
+    }
+  }, [setTimeElapsed]);
+
+  // Reset game when difficulty or customConfig changes, unless loading
   useEffect(() => {
+    if (isLoadingRef.current) {
+      isLoadingRef.current = false;
+      return;
+    }
     resetGame();
   }, [difficulty, customConfig, resetGame]);
+
+  interface GameStateForStorage {
+    board: CellData[][];
+    gameStatus: GameStatus;
+    minesRemaining: number;
+    difficulty: Difficulty;
+    customConfig?: BoardConfig;
+    timeElapsed: number;
+  }
+
+  const LOCAL_STORAGE_KEY = "minesweeper-game-state";
+
+  // Save game state to localStorage
+  const saveGameState = useCallback(() => {
+    const stateToSave: GameStateForStorage = {
+      board,
+      gameStatus,
+      minesRemaining,
+      difficulty,
+      customConfig,
+      timeElapsed,
+    };
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(stateToSave));
+    } catch {
+      // Ignore quota errors
+    }
+  }, [
+    board,
+    gameStatus,
+    minesRemaining,
+    difficulty,
+    customConfig,
+    timeElapsed,
+  ]);
 
   return {
     board,
@@ -152,5 +213,7 @@ export const useGameState = (
     handleCellFlag,
     resetGame,
     handleDifficultySelect,
+    saveGameState,
+    loadGameState,
   };
 };

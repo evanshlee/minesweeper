@@ -41,5 +41,5 @@ export const useGameTimer = (gameStatus: GameStatus) => {
     }
   }, []);
 
-  return { timeElapsed, resetTimer };
+  return { timeElapsed, resetTimer, setTimeElapsed };
 };
