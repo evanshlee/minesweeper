@@ -1,6 +1,8 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import type { BoardConfig } from "../../core/types";
+import type { GameStorage } from "./GameStorage";
+import type { GameStateForStorage } from "./useGameState";
 import { useGameState } from "./useGameState";
 
 // Timer mock
@@ -377,4 +379,24 @@ test("loaded game state persists after loadGameState is called", () => {
 
   // Clean up
   window.localStorage.removeItem("minesweeper-game-state");
+});
+
+test("hasSavedGame reflects storage.exists() and updates on storage event", () => {
+  let exists = false;
+  const mockStorage: GameStorage<GameStateForStorage> = {
+    load: () => undefined,
+    save: () => {},
+    exists: () => exists,
+    remove: () => {},
+  };
+  const { result, rerender } = renderHook(() =>
+    useGameState("beginner", undefined, mockStorage)
+  );
+  // Initially false
+  expect(result.current.hasSavedGame).toBe(false);
+  // Change storage.exists to true and rerender
+  exists = true;
+  window.dispatchEvent(new Event("storage"));
+  rerender();
+  expect(result.current.hasSavedGame).toBe(true);
 });

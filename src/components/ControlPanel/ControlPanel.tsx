@@ -1,8 +1,5 @@
 import type { FC } from "react";
-import { useEffect, useState } from "react";
 import { GameStatus } from "../../core/types";
-import type { GameStorage } from "../../hooks/useGameState/GameStorage";
-import type { GameStateForStorage } from "../../hooks/useGameState/useGameState";
 import "./ControlPanel.css";
 
 interface ControlPanelProps {
@@ -12,7 +9,7 @@ interface ControlPanelProps {
   onReset: () => void;
   onSave?: () => void;
   onLoad?: () => void;
-  storage?: GameStorage<GameStateForStorage>;
+  hasSavedGame?: boolean;
 }
 
 const ControlPanel: FC<ControlPanelProps> = ({
@@ -22,7 +19,7 @@ const ControlPanel: FC<ControlPanelProps> = ({
   onReset,
   onSave,
   onLoad,
-  storage,
+  hasSavedGame = false,
 }) => {
   // Format time as 3-digit display (000-999)
   const formatTime = (time: number): string => {
@@ -64,22 +61,6 @@ const ControlPanel: FC<ControlPanelProps> = ({
         return "Click to start a new game.";
     }
   };
-
-  const [hasSavedGame, setHasSavedGame] = useState<boolean>(false);
-  useEffect(() => {
-    if (storage && typeof storage.exists === "function") {
-      setHasSavedGame(storage.exists());
-      const handler = () => setHasSavedGame(storage.exists());
-      window.addEventListener("storage", handler);
-      return () => window.removeEventListener("storage", handler);
-    } else {
-      setHasSavedGame(!!localStorage.getItem("minesweeper-game-state"));
-      const handler = () =>
-        setHasSavedGame(!!localStorage.getItem("minesweeper-game-state"));
-      window.addEventListener("storage", handler);
-      return () => window.removeEventListener("storage", handler);
-    }
-  }, [storage]);
 
   return (
     <>

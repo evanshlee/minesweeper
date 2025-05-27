@@ -204,6 +204,16 @@ export const useGameState = (
     storage,
   ]);
 
+  const [hasSavedGame, setHasSavedGame] = useState<boolean>(() =>
+    storage.exists()
+  );
+  useEffect(() => {
+    setHasSavedGame(storage.exists());
+    const handler = () => setHasSavedGame(storage.exists());
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, [storage]);
+
   return {
     board,
     gameStatus,
@@ -217,5 +227,6 @@ export const useGameState = (
     handleDifficultySelect,
     saveGameState,
     loadGameState,
+    hasSavedGame,
   };
 };

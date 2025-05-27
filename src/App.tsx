@@ -27,6 +27,7 @@ function App() {
     difficulty,
     saveGameState,
     loadGameState,
+    hasSavedGame,
   } = useGameState("beginner", undefined, storage);
 
   // Handle Restart with keyboard shortcut
@@ -58,7 +59,7 @@ function App() {
         gameStatus={gameStatus}
         onSave={saveGameState}
         onLoad={loadGameState}
-        storage={storage}
+        hasSavedGame={hasSavedGame}
       />
 
       <GameBoard
