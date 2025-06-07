@@ -175,22 +175,36 @@ describe("revealCell", () => {
     expect(newBoard[cellY][cellX].isRevealed).toBe(false);
   });
 
-  test("cascade reveals for empty cells", () => {
-    // Arrange
-    const smallBoard = initializeBoard({ rows: 3, columns: 3, mines: 0 });
-    const centerX = 1;
-    const centerY = 1;
+  test.each([
+    {
+      desc: "3x3 board, no mines",
+      config: { rows: 3, columns: 3, mines: 0 },
+      centerX: 1,
+      centerY: 1,
+    },
+    {
+      desc: "5x5 board, no mines",
+      config: { rows: 5, columns: 5, mines: 0 },
+      centerX: 2,
+      centerY: 2,
+    },
+  ])(
+    "cascade reveals for empty cells ($desc)",
+    ({ config, centerX, centerY }) => {
+      // Arrange
+      const smallBoard = initializeBoard(config);
 
-    // Act
-    const newBoard = revealCell(smallBoard, centerX, centerY);
+      // Act
+      const newBoard = revealCell(smallBoard, centerX, centerY);
 
-    // Assert
-    for (let y = 0; y < 3; y++) {
-      for (let x = 0; x < 3; x++) {
-        expect(newBoard[y][x].isRevealed).toBe(true);
+      // Assert
+      for (let y = 0; y < config.rows; y++) {
+        for (let x = 0; x < config.columns; x++) {
+          expect(newBoard[y][x].isRevealed).toBe(true);
+        }
       }
     }
-  });
+  );
 });
 
 describe("checkWinCondition", () => {
