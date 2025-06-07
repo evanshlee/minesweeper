@@ -16,6 +16,18 @@ const testConfig: BoardConfig = {
   mines: 5,
 };
 
+// Helper to create a board with mines at specific positions
+function createBoardWithMines(
+  config: BoardConfig,
+  minePositions: Array<[number, number]>
+): ReturnType<typeof initializeBoard> {
+  const board = initializeBoard(config);
+  minePositions.forEach(([x, y]) => {
+    board[y][x].isMine = true;
+  });
+  return board;
+}
+
 describe("initializeBoard", () => {
   test("creates a board with the correct dimensions", () => {
     // Arrange
@@ -144,19 +156,14 @@ describe("revealCell", () => {
 describe("checkWinCondition", () => {
   test("returns true when all non-mine cells are revealed", () => {
     // Arrange
-    const board = initializeBoard(testConfig);
-    const minePositions = [
+    const minePositions: [number, number][] = [
       [0, 0],
       [1, 1],
       [2, 2],
       [3, 3],
       [4, 4],
     ];
-
-    // Set mines at specific positions
-    minePositions.forEach(([x, y]) => {
-      board[y][x].isMine = true;
-    });
+    const board = createBoardWithMines(testConfig, minePositions);
 
     // Reveal all non-mine cells
     for (let y = 0; y < testConfig.rows; y++) {
@@ -176,11 +183,11 @@ describe("checkWinCondition", () => {
 
   test("returns false when some non-mine cells are not revealed", () => {
     // Arrange
-    const board = initializeBoard(testConfig);
-
-    // Set mines at specific positions
-    board[0][0].isMine = true;
-    board[1][1].isMine = true;
+    const minePositions: [number, number][] = [
+      [0, 0],
+      [1, 1],
+    ];
+    const board = createBoardWithMines(testConfig, minePositions);
 
     // Reveal only some non-mine cells
     board[0][1].isRevealed = true;
