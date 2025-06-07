@@ -28,51 +28,76 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-test("renders an unrevealed cell correctly", () => {
-  const cell = createCellData();
-  render(<Cell {...defaultProps} cell={cell} />);
+const renderCell = (
+  cell: CellData,
+  props: Partial<Omit<ComponentProps<typeof Cell>, "cell">> = {}
+) => {
+  return render(<Cell {...defaultProps} {...props} cell={cell} />);
+};
 
+// Parameterized tests for rendering cell states
+const cellRenderCases = [
+  {
+    name: "unrevealed cell",
+    cell: createCellData(),
+    expected: {
+      class: (el: HTMLElement) => expect(el).not.toHaveClass("revealed"),
+      ariaPressed: "false",
+      text: "",
+    },
+  },
+  {
+    name: "revealed cell",
+    cell: createCellData({ isRevealed: true }),
+    expected: {
+      class: (el: HTMLElement) => expect(el).toHaveClass("revealed"),
+      ariaPressed: "true",
+      text: "",
+    },
+  },
+  {
+    name: "flagged cell",
+    cell: createCellData({ isFlagged: true }),
+    expected: {
+      class: (el: HTMLElement) => expect(el).toHaveClass("flagged"),
+      ariaPressed: "false",
+      text: "🚩",
+    },
+  },
+  {
+    name: "revealed mine",
+    cell: createCellData({ isRevealed: true, isMine: true }),
+    expected: {
+      class: (el: HTMLElement) => {
+        expect(el).toHaveClass("revealed");
+        expect(el).toHaveClass("mine");
+      },
+      ariaPressed: "true",
+      text: "💣",
+    },
+  },
+  {
+    name: "revealed with adjacent mines",
+    cell: createCellData({ isRevealed: true, adjacentMines: 3 }),
+    expected: {
+      class: (el: HTMLElement) => {
+        expect(el).toHaveClass("revealed");
+        expect(el).toHaveClass("adjacent-3");
+      },
+      ariaPressed: "true",
+      text: "3",
+    },
+  },
+];
+
+test.each(cellRenderCases)("renders $name correctly", ({ cell, expected }) => {
+  renderCell(cell);
   const cellElement = screen.getByRole("gridcell");
-  expect(cellElement).not.toHaveClass("revealed");
-  expect(cellElement).toHaveAttribute("aria-pressed", "false");
-});
-
-test("renders a revealed cell correctly", () => {
-  const cell = createCellData({ isRevealed: true });
-  render(<Cell {...defaultProps} cell={cell} />);
-
-  const cellElement = screen.getByRole("gridcell");
-  expect(cellElement).toHaveClass("revealed");
-  expect(cellElement).toHaveAttribute("aria-pressed", "true");
-});
-
-test("renders a flagged cell correctly", () => {
-  const cell = createCellData({ isFlagged: true });
-  render(<Cell {...defaultProps} cell={cell} />);
-
-  const cellElement = screen.getByRole("gridcell");
-  expect(cellElement).toHaveClass("flagged");
-  expect(cellElement).toHaveTextContent("🚩");
-});
-
-test("renders a revealed mine correctly", () => {
-  const cell = createCellData({ isRevealed: true, isMine: true });
-  render(<Cell {...defaultProps} cell={cell} />);
-
-  const cellElement = screen.getByRole("gridcell");
-  expect(cellElement).toHaveClass("revealed");
-  expect(cellElement).toHaveClass("mine");
-  expect(cellElement).toHaveTextContent("💣");
-});
-
-test("renders adjacent mine count when revealed", () => {
-  const cell = createCellData({ isRevealed: true, adjacentMines: 3 });
-  render(<Cell {...defaultProps} cell={cell} />);
-
-  const cellElement = screen.getByRole("gridcell");
-  expect(cellElement).toHaveClass("revealed");
-  expect(cellElement).toHaveClass("adjacent-3");
-  expect(cellElement).toHaveTextContent("3");
+  expected.class(cellElement);
+  expect(cellElement).toHaveAttribute("aria-pressed", expected.ariaPressed);
+  if (expected.text) {
+    expect(cellElement).toHaveTextContent(expected.text);
+  }
 });
 
 test("calls onCellClick with correct coordinates when clicked", () => {
