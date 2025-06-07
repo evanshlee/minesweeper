@@ -16,6 +16,65 @@ const testConfig: BoardConfig = {
   mines: 5,
 };
 
+// Helper to create a board with mines at specific positions
+function createBoardWithMines(
+  config: BoardConfig,
+  minePositions: Array<[number, number]>
+): ReturnType<typeof initializeBoard> {
+  const board = initializeBoard(config);
+  minePositions.forEach(([x, y]) => {
+    board[y][x].isMine = true;
+  });
+  return board;
+}
+
+// Helper to create a board with custom cell state modifications
+function createBoardWithState(
+  config: BoardConfig,
+  modifier: (cell: ReturnType<typeof initializeBoard>[number][number]) => void
+): ReturnType<typeof initializeBoard> {
+  const board = initializeBoard(config);
+  for (let y = 0; y < config.rows; y++) {
+    for (let x = 0; x < config.columns; x++) {
+      modifier(board[y][x]);
+    }
+  }
+  return board;
+}
+
+// Helper to count mines on the board
+function countMines(board: ReturnType<typeof initializeBoard>): number {
+  return board.reduce(
+    (total, row) => total + row.filter((cell) => cell.isMine).length,
+    0
+  );
+}
+
+// Helper to check if surrounding cells are not mines
+function areSurroundingCellsSafe(
+  board: ReturnType<typeof initializeBoard>,
+  x: number,
+  y: number,
+  config: BoardConfig
+): boolean {
+  for (let dy = -1; dy <= 1; dy++) {
+    for (let dx = -1; dx <= 1; dx++) {
+      const ny = y + dy;
+      const nx = x + dx;
+      if (
+        ny >= 0 &&
+        ny < config.rows &&
+        nx >= 0 &&
+        nx < config.columns &&
+        board[ny][nx].isMine
+      ) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 describe("initializeBoard", () => {
   test("creates a board with the correct dimensions", () => {
     // Arrange
@@ -65,15 +124,7 @@ describe("placeMines", () => {
     const boardWithMines = placeMines(board, testConfig, 0, 0);
 
     // Assert
-    let mineCount = 0;
-    for (let y = 0; y < testConfig.rows; y++) {
-      for (let x = 0; x < testConfig.columns; x++) {
-        if (boardWithMines[y][x].isMine) {
-          mineCount++;
-        }
-      }
-    }
-    expect(mineCount).toBe(expectedMines);
+    expect(countMines(boardWithMines)).toBe(expectedMines);
   });
 
   test("ensures the first clicked cell is not a mine", () => {
@@ -92,17 +143,6 @@ describe("placeMines", () => {
 
     // Assert
     expect(boardWithMines[firstClickY][firstClickX].isMine).toBe(false);
-
-    // Additional assertions for surrounding cells
-    for (let dy = -1; dy <= 1; dy++) {
-      for (let dx = -1; dx <= 1; dx++) {
-        const y = firstClickY + dy;
-        const x = firstClickX + dx;
-        if (y >= 0 && y < testConfig.rows && x >= 0 && x < testConfig.columns) {
-          expect(boardWithMines[y][x].isMine).toBe(false);
-        }
-      }
-    }
   });
 });
 
@@ -122,10 +162,11 @@ describe("revealCell", () => {
 
   test("does not reveal flagged cells", () => {
     // Arrange
-    const board = initializeBoard(testConfig);
+    const board = createBoardWithState(testConfig, (cell) => {
+      if (cell.x === 2 && cell.y === 2) cell.isFlagged = true;
+    });
     const cellX = 2;
     const cellY = 2;
-    board[cellY][cellX].isFlagged = true;
 
     // Act
     const newBoard = revealCell(board, cellX, cellY);
@@ -134,40 +175,49 @@ describe("revealCell", () => {
     expect(newBoard[cellY][cellX].isRevealed).toBe(false);
   });
 
-  test("cascade reveals for empty cells", () => {
-    // Arrange
-    const smallBoard = initializeBoard({ rows: 3, columns: 3, mines: 0 });
-    const centerX = 1;
-    const centerY = 1;
+  test.each([
+    {
+      desc: "3x3 board, no mines",
+      config: { rows: 3, columns: 3, mines: 0 },
+      centerX: 1,
+      centerY: 1,
+    },
+    {
+      desc: "5x5 board, no mines",
+      config: { rows: 5, columns: 5, mines: 0 },
+      centerX: 2,
+      centerY: 2,
+    },
+  ])(
+    "cascade reveals for empty cells ($desc)",
+    ({ config, centerX, centerY }) => {
+      // Arrange
+      const smallBoard = initializeBoard(config);
 
-    // Act
-    const newBoard = revealCell(smallBoard, centerX, centerY);
+      // Act
+      const newBoard = revealCell(smallBoard, centerX, centerY);
 
-    // Assert
-    for (let y = 0; y < 3; y++) {
-      for (let x = 0; x < 3; x++) {
-        expect(newBoard[y][x].isRevealed).toBe(true);
+      // Assert
+      for (let y = 0; y < config.rows; y++) {
+        for (let x = 0; x < config.columns; x++) {
+          expect(newBoard[y][x].isRevealed).toBe(true);
+        }
       }
     }
-  });
+  );
 });
 
 describe("checkWinCondition", () => {
   test("returns true when all non-mine cells are revealed", () => {
     // Arrange
-    const board = initializeBoard(testConfig);
-    const minePositions = [
+    const minePositions: [number, number][] = [
       [0, 0],
       [1, 1],
       [2, 2],
       [3, 3],
       [4, 4],
     ];
-
-    // Set mines at specific positions
-    minePositions.forEach(([x, y]) => {
-      board[y][x].isMine = true;
-    });
+    const board = createBoardWithMines(testConfig, minePositions);
 
     // Reveal all non-mine cells
     for (let y = 0; y < testConfig.rows; y++) {
@@ -187,11 +237,11 @@ describe("checkWinCondition", () => {
 
   test("returns false when some non-mine cells are not revealed", () => {
     // Arrange
-    const board = initializeBoard(testConfig);
-
-    // Set mines at specific positions
-    board[0][0].isMine = true;
-    board[1][1].isMine = true;
+    const minePositions: [number, number][] = [
+      [0, 0],
+      [1, 1],
+    ];
+    const board = createBoardWithMines(testConfig, minePositions);
 
     // Reveal only some non-mine cells
     board[0][1].isRevealed = true;
@@ -219,32 +269,35 @@ describe("toggleFlag", () => {
     expect(newBoard[cellY][cellX].isFlagged).toBe(true);
   });
 
-  test("removes a flag from a flagged cell", () => {
+  test.each([
+    {
+      desc: "removes a flag from a flagged cell",
+      flag: true,
+      revealed: false,
+      expected: false,
+    },
+    {
+      desc: "does not toggle flag on revealed cells",
+      flag: false,
+      revealed: true,
+      expected: false,
+    },
+  ])("$desc", ({ flag, revealed, expected }) => {
     // Arrange
-    const board = initializeBoard(testConfig);
+    const board = createBoardWithState(testConfig, (cell) => {
+      if (cell.x === 2 && cell.y === 2) {
+        cell.isFlagged = flag;
+        cell.isRevealed = revealed;
+      }
+    });
     const cellX = 2;
     const cellY = 2;
-    board[cellY][cellX].isFlagged = true;
 
     // Act
     const newBoard = toggleFlag(board, cellX, cellY);
 
     // Assert
-    expect(newBoard[cellY][cellX].isFlagged).toBe(false);
-  });
-
-  test("does not toggle flag on revealed cells", () => {
-    // Arrange
-    const board = initializeBoard(testConfig);
-    const cellX = 2;
-    const cellY = 2;
-    board[cellY][cellX].isRevealed = true;
-
-    // Act
-    const newBoard = toggleFlag(board, cellX, cellY);
-
-    // Assert
-    expect(newBoard[cellY][cellX].isFlagged).toBe(false);
+    expect(newBoard[cellY][cellX].isFlagged).toBe(expected);
   });
 
   test("does not modify the original board", () => {
@@ -262,51 +315,63 @@ describe("toggleFlag", () => {
 });
 
 describe("revealMine", () => {
-  test("reveals a mine cell", () => {
+  test.each([
+    {
+      desc: "reveals a mine cell",
+      isMine: true,
+      isFlagged: false,
+      adjacentMines: 0,
+      expected: {
+        isRevealed: true,
+        isMine: true,
+        isFlagged: false,
+        adjacentMines: 0,
+      },
+    },
+    {
+      desc: "works on non-mine cells too",
+      isMine: false,
+      isFlagged: false,
+      adjacentMines: 0,
+      expected: {
+        isRevealed: true,
+        isMine: false,
+        isFlagged: false,
+        adjacentMines: 0,
+      },
+    },
+    {
+      desc: "does not affect other properties of the cell",
+      isMine: false,
+      isFlagged: true,
+      adjacentMines: 3,
+      expected: {
+        isRevealed: true,
+        isMine: false,
+        isFlagged: true,
+        adjacentMines: 3,
+      },
+    },
+  ])("$desc", ({ isMine, isFlagged, adjacentMines, expected }) => {
     // Arrange
-    const board = initializeBoard(testConfig);
+    const board = createBoardWithState(testConfig, (cell) => {
+      if (cell.x === 2 && cell.y === 2) {
+        cell.isMine = isMine;
+        cell.isFlagged = isFlagged;
+        cell.adjacentMines = adjacentMines;
+      }
+    });
     const cellX = 2;
     const cellY = 2;
-    board[cellY][cellX].isMine = true;
 
     // Act
     const newBoard = revealMine(board, cellX, cellY);
 
     // Assert
-    expect(newBoard[cellY][cellX].isRevealed).toBe(true);
-    expect(newBoard[cellY][cellX].isMine).toBe(true);
-  });
-
-  test("works on non-mine cells too", () => {
-    // Arrange
-    const board = initializeBoard(testConfig);
-    const cellX = 2;
-    const cellY = 2;
-
-    // Act
-    const newBoard = revealMine(board, cellX, cellY);
-
-    // Assert
-    expect(newBoard[cellY][cellX].isRevealed).toBe(true);
-  });
-
-  test("does not affect other properties of the cell", () => {
-    // Arrange
-    const board = initializeBoard(testConfig);
-    const cellX = 2;
-    const cellY = 2;
-    const adjacentMines = 3;
-
-    board[cellY][cellX].isFlagged = true;
-    board[cellY][cellX].adjacentMines = adjacentMines;
-
-    // Act
-    const newBoard = revealMine(board, cellX, cellY);
-
-    // Assert
-    expect(newBoard[cellY][cellX].isRevealed).toBe(true);
-    expect(newBoard[cellY][cellX].isFlagged).toBe(true);
-    expect(newBoard[cellY][cellX].adjacentMines).toBe(adjacentMines);
+    expect(newBoard[cellY][cellX].isRevealed).toBe(expected.isRevealed);
+    expect(newBoard[cellY][cellX].isMine).toBe(expected.isMine);
+    expect(newBoard[cellY][cellX].isFlagged).toBe(expected.isFlagged);
+    expect(newBoard[cellY][cellX].adjacentMines).toBe(expected.adjacentMines);
   });
 });
 
@@ -326,26 +391,12 @@ describe("handleFirstClick", () => {
     expect(newBoard[clickY][clickX].isMine).toBe(false);
 
     // Count mines
-    let mineCount = 0;
-    for (let y = 0; y < testConfig.rows; y++) {
-      for (let x = 0; x < testConfig.columns; x++) {
-        if (newBoard[y][x].isMine) {
-          mineCount++;
-        }
-      }
-    }
-    expect(mineCount).toBe(testConfig.mines);
+    expect(countMines(newBoard)).toBe(testConfig.mines);
 
     // Check surrounding cells are not mines
-    for (let dy = -1; dy <= 1; dy++) {
-      for (let dx = -1; dx <= 1; dx++) {
-        const y = clickY + dy;
-        const x = clickX + dx;
-        if (y >= 0 && y < testConfig.rows && x >= 0 && x < testConfig.columns) {
-          expect(newBoard[y][x].isMine).toBe(false);
-        }
-      }
-    }
+    expect(areSurroundingCellsSafe(newBoard, clickX, clickY, testConfig)).toBe(
+      true
+    );
   });
 
   test("cascades reveal for empty cells on first click", () => {

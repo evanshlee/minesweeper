@@ -1,19 +1,10 @@
 import { act, renderHook } from "@testing-library/react";
-import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { expect, test, vi } from "vitest";
 import type { GameStatus } from "../../core/types";
 import { useGameTimer } from "./useGameTimer";
 
-// Timer mock
-beforeEach(() => {
-  vi.useFakeTimers();
-});
-
-afterEach(() => {
-  vi.clearAllMocks();
-  vi.useRealTimers();
-});
-
 test("timer starts when game status is playing", () => {
+  vi.useFakeTimers(); // Use timer mock only in this test
   // Arrange
   const { result, rerender } = renderHook(
     ({ status }) => useGameTimer(status),
@@ -33,9 +24,11 @@ test("timer starts when game status is playing", () => {
 
   // Assert
   expect(result.current.timeElapsed).toBe(3);
+  vi.useRealTimers(); // Cleanup
 });
 
 test("timer stops when game status is won or lost", () => {
+  vi.useFakeTimers();
   // Arrange
   const { result, rerender } = renderHook(
     ({ status }) => useGameTimer(status),
@@ -58,9 +51,11 @@ test("timer stops when game status is won or lost", () => {
 
   // Assert - Time should not increase
   expect(result.current.timeElapsed).toBe(5);
+  vi.useRealTimers();
 });
 
 test("resetTimer sets timer back to zero", () => {
+  vi.useFakeTimers();
   // Arrange
   const { result } = renderHook(({ status }) => useGameTimer(status), {
     initialProps: { status: "playing" as const },
@@ -79,4 +74,5 @@ test("resetTimer sets timer back to zero", () => {
 
   // Assert
   expect(result.current.timeElapsed).toBe(0);
+  vi.useRealTimers();
 });
