@@ -42,6 +42,39 @@ function createBoardWithState(
   return board;
 }
 
+// Helper to count mines on the board
+function countMines(board: ReturnType<typeof initializeBoard>): number {
+  return board.reduce(
+    (total, row) => total + row.filter((cell) => cell.isMine).length,
+    0
+  );
+}
+
+// Helper to check if surrounding cells are not mines
+function areSurroundingCellsSafe(
+  board: ReturnType<typeof initializeBoard>,
+  x: number,
+  y: number,
+  config: BoardConfig
+): boolean {
+  for (let dy = -1; dy <= 1; dy++) {
+    for (let dx = -1; dx <= 1; dx++) {
+      const ny = y + dy;
+      const nx = x + dx;
+      if (
+        ny >= 0 &&
+        ny < config.rows &&
+        nx >= 0 &&
+        nx < config.columns &&
+        board[ny][nx].isMine
+      ) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 describe("initializeBoard", () => {
   test("creates a board with the correct dimensions", () => {
     // Arrange
@@ -352,26 +385,12 @@ describe("handleFirstClick", () => {
     expect(newBoard[clickY][clickX].isMine).toBe(false);
 
     // Count mines
-    let mineCount = 0;
-    for (let y = 0; y < testConfig.rows; y++) {
-      for (let x = 0; x < testConfig.columns; x++) {
-        if (newBoard[y][x].isMine) {
-          mineCount++;
-        }
-      }
-    }
-    expect(mineCount).toBe(testConfig.mines);
+    expect(countMines(newBoard)).toBe(testConfig.mines);
 
     // Check surrounding cells are not mines
-    for (let dy = -1; dy <= 1; dy++) {
-      for (let dx = -1; dx <= 1; dx++) {
-        const y = clickY + dy;
-        const x = clickX + dx;
-        if (y >= 0 && y < testConfig.rows && x >= 0 && x < testConfig.columns) {
-          expect(newBoard[y][x].isMine).toBe(false);
-        }
-      }
-    }
+    expect(areSurroundingCellsSafe(newBoard, clickX, clickY, testConfig)).toBe(
+      true
+    );
   });
 
   test("cascades reveal for empty cells on first click", () => {
