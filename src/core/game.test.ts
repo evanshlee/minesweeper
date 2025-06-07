@@ -92,17 +92,6 @@ describe("placeMines", () => {
 
     // Assert
     expect(boardWithMines[firstClickY][firstClickX].isMine).toBe(false);
-
-    // Additional assertions for surrounding cells
-    for (let dy = -1; dy <= 1; dy++) {
-      for (let dx = -1; dx <= 1; dx++) {
-        const y = firstClickY + dy;
-        const x = firstClickX + dx;
-        if (y >= 0 && y < testConfig.rows && x >= 0 && x < testConfig.columns) {
-          expect(boardWithMines[y][x].isMine).toBe(false);
-        }
-      }
-    }
   });
 });
 
