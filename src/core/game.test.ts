@@ -230,10 +230,26 @@ describe("toggleFlag", () => {
     expect(newBoard[cellY][cellX].isFlagged).toBe(true);
   });
 
-  test("removes a flag from a flagged cell", () => {
+  test.each([
+    {
+      desc: "removes a flag from a flagged cell",
+      flag: true,
+      revealed: false,
+      expected: false,
+    },
+    {
+      desc: "does not toggle flag on revealed cells",
+      flag: false,
+      revealed: true,
+      expected: false,
+    },
+  ])("$desc", ({ flag, revealed, expected }) => {
     // Arrange
     const board = createBoardWithState(testConfig, (cell) => {
-      if (cell.x === 2 && cell.y === 2) cell.isFlagged = true;
+      if (cell.x === 2 && cell.y === 2) {
+        cell.isFlagged = flag;
+        cell.isRevealed = revealed;
+      }
     });
     const cellX = 2;
     const cellY = 2;
@@ -242,22 +258,7 @@ describe("toggleFlag", () => {
     const newBoard = toggleFlag(board, cellX, cellY);
 
     // Assert
-    expect(newBoard[cellY][cellX].isFlagged).toBe(false);
-  });
-
-  test("does not toggle flag on revealed cells", () => {
-    // Arrange
-    const board = createBoardWithState(testConfig, (cell) => {
-      if (cell.x === 2 && cell.y === 2) cell.isRevealed = true;
-    });
-    const cellX = 2;
-    const cellY = 2;
-
-    // Act
-    const newBoard = toggleFlag(board, cellX, cellY);
-
-    // Assert
-    expect(newBoard[cellY][cellX].isFlagged).toBe(false);
+    expect(newBoard[cellY][cellX].isFlagged).toBe(expected);
   });
 
   test("does not modify the original board", () => {
@@ -275,51 +276,63 @@ describe("toggleFlag", () => {
 });
 
 describe("revealMine", () => {
-  test("reveals a mine cell", () => {
+  test.each([
+    {
+      desc: "reveals a mine cell",
+      isMine: true,
+      isFlagged: false,
+      adjacentMines: 0,
+      expected: {
+        isRevealed: true,
+        isMine: true,
+        isFlagged: false,
+        adjacentMines: 0,
+      },
+    },
+    {
+      desc: "works on non-mine cells too",
+      isMine: false,
+      isFlagged: false,
+      adjacentMines: 0,
+      expected: {
+        isRevealed: true,
+        isMine: false,
+        isFlagged: false,
+        adjacentMines: 0,
+      },
+    },
+    {
+      desc: "does not affect other properties of the cell",
+      isMine: false,
+      isFlagged: true,
+      adjacentMines: 3,
+      expected: {
+        isRevealed: true,
+        isMine: false,
+        isFlagged: true,
+        adjacentMines: 3,
+      },
+    },
+  ])("$desc", ({ isMine, isFlagged, adjacentMines, expected }) => {
     // Arrange
-    const board = initializeBoard(testConfig);
+    const board = createBoardWithState(testConfig, (cell) => {
+      if (cell.x === 2 && cell.y === 2) {
+        cell.isMine = isMine;
+        cell.isFlagged = isFlagged;
+        cell.adjacentMines = adjacentMines;
+      }
+    });
     const cellX = 2;
     const cellY = 2;
-    board[cellY][cellX].isMine = true;
 
     // Act
     const newBoard = revealMine(board, cellX, cellY);
 
     // Assert
-    expect(newBoard[cellY][cellX].isRevealed).toBe(true);
-    expect(newBoard[cellY][cellX].isMine).toBe(true);
-  });
-
-  test("works on non-mine cells too", () => {
-    // Arrange
-    const board = initializeBoard(testConfig);
-    const cellX = 2;
-    const cellY = 2;
-
-    // Act
-    const newBoard = revealMine(board, cellX, cellY);
-
-    // Assert
-    expect(newBoard[cellY][cellX].isRevealed).toBe(true);
-  });
-
-  test("does not affect other properties of the cell", () => {
-    // Arrange
-    const board = initializeBoard(testConfig);
-    const cellX = 2;
-    const cellY = 2;
-    const adjacentMines = 3;
-
-    board[cellY][cellX].isFlagged = true;
-    board[cellY][cellX].adjacentMines = adjacentMines;
-
-    // Act
-    const newBoard = revealMine(board, cellX, cellY);
-
-    // Assert
-    expect(newBoard[cellY][cellX].isRevealed).toBe(true);
-    expect(newBoard[cellY][cellX].isFlagged).toBe(true);
-    expect(newBoard[cellY][cellX].adjacentMines).toBe(adjacentMines);
+    expect(newBoard[cellY][cellX].isRevealed).toBe(expected.isRevealed);
+    expect(newBoard[cellY][cellX].isMine).toBe(expected.isMine);
+    expect(newBoard[cellY][cellX].isFlagged).toBe(expected.isFlagged);
+    expect(newBoard[cellY][cellX].adjacentMines).toBe(expected.adjacentMines);
   });
 });
 
