@@ -28,6 +28,20 @@ function createBoardWithMines(
   return board;
 }
 
+// Helper to create a board with custom cell state modifications
+function createBoardWithState(
+  config: BoardConfig,
+  modifier: (cell: ReturnType<typeof initializeBoard>[number][number]) => void
+): ReturnType<typeof initializeBoard> {
+  const board = initializeBoard(config);
+  for (let y = 0; y < config.rows; y++) {
+    for (let x = 0; x < config.columns; x++) {
+      modifier(board[y][x]);
+    }
+  }
+  return board;
+}
+
 describe("initializeBoard", () => {
   test("creates a board with the correct dimensions", () => {
     // Arrange
@@ -123,10 +137,11 @@ describe("revealCell", () => {
 
   test("does not reveal flagged cells", () => {
     // Arrange
-    const board = initializeBoard(testConfig);
+    const board = createBoardWithState(testConfig, (cell) => {
+      if (cell.x === 2 && cell.y === 2) cell.isFlagged = true;
+    });
     const cellX = 2;
     const cellY = 2;
-    board[cellY][cellX].isFlagged = true;
 
     // Act
     const newBoard = revealCell(board, cellX, cellY);
@@ -217,10 +232,11 @@ describe("toggleFlag", () => {
 
   test("removes a flag from a flagged cell", () => {
     // Arrange
-    const board = initializeBoard(testConfig);
+    const board = createBoardWithState(testConfig, (cell) => {
+      if (cell.x === 2 && cell.y === 2) cell.isFlagged = true;
+    });
     const cellX = 2;
     const cellY = 2;
-    board[cellY][cellX].isFlagged = true;
 
     // Act
     const newBoard = toggleFlag(board, cellX, cellY);
@@ -231,10 +247,11 @@ describe("toggleFlag", () => {
 
   test("does not toggle flag on revealed cells", () => {
     // Arrange
-    const board = initializeBoard(testConfig);
+    const board = createBoardWithState(testConfig, (cell) => {
+      if (cell.x === 2 && cell.y === 2) cell.isRevealed = true;
+    });
     const cellX = 2;
     const cellY = 2;
-    board[cellY][cellX].isRevealed = true;
 
     // Act
     const newBoard = toggleFlag(board, cellX, cellY);
