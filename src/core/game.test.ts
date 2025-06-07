@@ -124,15 +124,7 @@ describe("placeMines", () => {
     const boardWithMines = placeMines(board, testConfig, 0, 0);
 
     // Assert
-    let mineCount = 0;
-    for (let y = 0; y < testConfig.rows; y++) {
-      for (let x = 0; x < testConfig.columns; x++) {
-        if (boardWithMines[y][x].isMine) {
-          mineCount++;
-        }
-      }
-    }
-    expect(mineCount).toBe(expectedMines);
+    expect(countMines(boardWithMines)).toBe(expectedMines);
   });
 
   test("ensures the first clicked cell is not a mine", () => {
